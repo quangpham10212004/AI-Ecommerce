@@ -1,10 +1,10 @@
 const fallbackProducts = [
-    { id: 1, name: "Tai nghe Sony WH-1000XM5", category: "Thiết bị âm thanh", price: "7,990,000đ", ai_match: 98, image_icon: "🎧" },
-    { id: 2, name: "Bàn phím cơ Keychron Q1", category: "Phụ kiện", price: "3,850,000đ", ai_match: 92, image_icon: "⌨️" },
-    { id: 3, name: "Chuột Logitech MX Master 3S", category: "Phụ kiện", price: "2,490,000đ", ai_match: 88, image_icon: "🖱️" },
-    { id: 4, name: "Màn hình LG UltraGear 27", category: "Màn hình", price: "8,500,000đ", ai_match: null, image_icon: "🖥️" },
-    { id: 5, name: "MacBook Pro M3 14", category: "Laptop", price: "39,990,000đ", ai_match: 81, image_icon: "💻" },
-    { id: 6, name: "Giá đỡ Laptop Nhôm", category: "Phụ kiện", price: "450,000đ", ai_match: 75, image_icon: "🪄" }
+    { id: 1, name: "Sony WH-1000XM5 Headphones", category: "Audio", price: "$319", ai_match: 98, image_icon: "H" },
+    { id: 2, name: "Keychron Q1 Mechanical Keyboard", category: "Accessories", price: "$154", ai_match: 92, image_icon: "K" },
+    { id: 3, name: "Logitech MX Master 3S Mouse", category: "Accessories", price: "$100", ai_match: 88, image_icon: "M" },
+    { id: 4, name: "LG UltraGear 27 Monitor", category: "Monitors", price: "$340", ai_match: null, image_icon: "L" },
+    { id: 5, name: "MacBook Pro M3 14", category: "Laptop", price: "$1,600", ai_match: 81, image_icon: "P" },
+    { id: 6, name: "Aluminum Laptop Stand", category: "Accessories", price: "$18", ai_match: 75, image_icon: "A" }
 ];
 
 const state = {
@@ -26,6 +26,25 @@ const catalogMetaText = document.getElementById("catalog-meta-text");
 const recommendationChips = document.getElementById("recommendation-chips");
 const behaviorSummary = document.getElementById("behavior-summary");
 const chatLog = document.getElementById("chat-log");
+
+const productTranslations = {
+    "Tai nghe Sony WH-1000XM5": "Sony WH-1000XM5 Headphones",
+    "Bàn phím cơ Keychron Q1": "Keychron Q1 Mechanical Keyboard",
+    "Chuột Logitech MX Master 3S": "Logitech MX Master 3S Mouse",
+    "Màn hình LG UltraGear 27": "LG UltraGear 27 Monitor",
+    "Giá đỡ Laptop Nhôm": "Aluminum Laptop Stand",
+    "Thiết bị âm thanh": "Audio",
+    "Phụ kiện": "Accessories",
+    "Màn hình": "Monitors"
+};
+
+function localizeProduct(product) {
+    return {
+        ...product,
+        name: productTranslations[product.name] || product.name,
+        category: productTranslations[product.category] || product.category
+    };
+}
 
 function setStatus(id, text, tone) {
     const el = document.getElementById(id);
@@ -50,8 +69,8 @@ function renderProducts(products) {
     if (!products.length) {
         productGrid.innerHTML = `
             <div class="empty-state">
-                <h3>Chưa có sản phẩm để hiển thị</h3>
-                <p>Product service chưa trả dữ liệu. Bạn có thể seed database hoặc dùng dữ liệu mẫu để demo.</p>
+                <h3>No products available</h3>
+                <p>The product service did not return data. You can seed the database or use fallback data for the demo.</p>
             </div>
         `;
         return;
@@ -60,22 +79,22 @@ function renderProducts(products) {
     productGrid.innerHTML = products.map((product) => {
         const recommended = isRecommended(product.id);
         const matchScore = product.ai_match ? `<span class="pill pill-muted">AI match ${product.ai_match}%</span>` : "";
-        const recommendedBadge = recommended ? `<span class="pill pill-accent">Được model_behavior chọn</span>` : "";
+        const recommendedBadge = recommended ? `<span class="pill pill-accent">Duoc model_behavior chon</span>` : "";
 
         return `
             <article class="product-card ${recommended ? "product-card-recommended" : ""}">
-                <div class="product-visual">${escapeHtml(product.image_icon || "🛍️")}</div>
+                <div class="product-visual">${escapeHtml(product.image_icon || "SP")}</div>
                 <div class="product-body">
                     <div class="product-badges">
                         ${recommendedBadge}
                         ${matchScore}
                     </div>
                     <h3>${escapeHtml(product.name)}</h3>
-                    <p class="product-category">${escapeHtml(product.category || "Chưa phân loại")}</p>
+                    <p class="product-category">${escapeHtml(product.category || "Uncategorized")}</p>
                     <div class="product-footer">
-                        <strong>${escapeHtml(product.price || "Liên hệ")}</strong>
+                        <strong>${escapeHtml(product.price || "Contact us")}</strong>
                         <button type="button" class="button button-small button-secondary" data-product-id="${product.id}">
-                            Dùng cho chat
+                            Use in chat
                         </button>
                     </div>
                 </div>
@@ -85,8 +104,8 @@ function renderProducts(products) {
 }
 
 function syncCatalogMeta() {
-    const source = state.usingFallbackProducts ? "dữ liệu mẫu" : "product_service";
-    catalogMetaText.textContent = `Hiển thị ${state.filteredProducts.length} sản phẩm từ ${source}.`;
+    const source = state.usingFallbackProducts ? "fallback data" : "product_service";
+    catalogMetaText.textContent = `Showing ${state.filteredProducts.length} products from ${source}.`;
 }
 
 function applyProductFilter() {
@@ -110,23 +129,23 @@ async function fetchJson(url, options = {}) {
 }
 
 async function loadProducts() {
-    setStatus("catalog-status", "Đang tải", "pending");
+    setStatus("catalog-status", "Loading", "pending");
     try {
         const data = await fetchJson(endpointMap.products);
-        const products = Array.isArray(data) ? data : data.results || [];
+        const products = (Array.isArray(data) ? data : data.results || []).map(localizeProduct);
         if (!products.length) {
             state.products = fallbackProducts;
             state.usingFallbackProducts = true;
-            setStatus("catalog-status", "Dùng dữ liệu mẫu", "warn");
+            setStatus("catalog-status", "Using fallback data", "warn");
         } else {
             state.products = products;
             state.usingFallbackProducts = false;
-            setStatus("catalog-status", "Đã kết nối", "ok");
+            setStatus("catalog-status", "Connected", "ok");
         }
     } catch (error) {
         state.products = fallbackProducts;
         state.usingFallbackProducts = true;
-        setStatus("catalog-status", "API lỗi, dùng dữ liệu mẫu", "warn");
+        setStatus("catalog-status", "API error, using fallback data", "warn");
     }
 
     state.filteredProducts = [...state.products];
@@ -143,7 +162,7 @@ function addChatMessage(text, role) {
 }
 
 async function runBehaviorModel(payload) {
-    setStatus("behavior-status", "Đang suy luận", "pending");
+    setStatus("behavior-status", "Running", "pending");
     try {
         const data = await fetchJson(endpointMap.recommend, {
             method: "POST",
@@ -153,38 +172,38 @@ async function runBehaviorModel(payload) {
         const recommendedProducts = state.products.filter((product) => state.recommendationIds.includes(product.id));
 
         if (recommendedProducts.length) {
-            behaviorSummary.textContent = `Model đề xuất ${recommendedProducts.length} sản phẩm phù hợp với tín hiệu hành vi vừa gửi.`;
+            behaviorSummary.textContent = `The model recommended ${recommendedProducts.length} products for the submitted customer signal.`;
             recommendationChips.innerHTML = recommendedProducts
                 .map((product) => `<span class="chip">${escapeHtml(product.name)}</span>`)
                 .join("");
         } else {
-            behaviorSummary.textContent = "Model đã phản hồi nhưng chưa match được sản phẩm trong catalog hiện tại.";
+            behaviorSummary.textContent = "The model responded, but none of the recommended items matched the current catalog.";
             recommendationChips.innerHTML = "";
         }
 
-        setStatus("behavior-status", "Sẵn sàng", "ok");
+        setStatus("behavior-status", "Ready", "ok");
         renderProducts(state.filteredProducts);
     } catch (error) {
-        behaviorSummary.textContent = "Không gọi được behavior service. Kiểm tra container `behavior_service` hoặc gateway.";
+        behaviorSummary.textContent = "The behavior service could not be reached. Check the behavior_service container or the gateway.";
         recommendationChips.innerHTML = "";
-        setStatus("behavior-status", "Lỗi kết nối", "error");
+        setStatus("behavior-status", "Connection error", "error");
     }
 }
 
 async function sendChat(query) {
     addChatMessage(query, "user");
-    setStatus("chat-status", "Đang truy xuất", "pending");
+    setStatus("chat-status", "Retrieving", "pending");
 
     try {
         const data = await fetchJson(endpointMap.chat, {
             method: "POST",
             body: JSON.stringify({ query })
         });
-        addChatMessage(data.response || "RAG service không trả nội dung.", "bot");
-        setStatus("chat-status", "Đã phản hồi", "ok");
+        addChatMessage(data.response || "The RAG service returned an empty response.", "bot");
+        setStatus("chat-status", "Responded", "ok");
     } catch (error) {
-        addChatMessage("Không gọi được RAG chat service. Kiểm tra endpoint hoặc container tương ứng.", "bot");
-        setStatus("chat-status", "Lỗi kết nối", "error");
+        addChatMessage("The RAG chat service could not be reached. Check the endpoint or the corresponding container.", "bot");
+        setStatus("chat-status", "Connection error", "error");
     }
 }
 
@@ -216,7 +235,7 @@ document.getElementById("chat-form").addEventListener("submit", async (event) =>
 document.getElementById("clear-chat").addEventListener("click", () => {
     chatLog.innerHTML = `
         <div class="chat-message chat-message-bot">
-            Phiên chat mới đã được tạo. Bạn có thể tiếp tục hỏi về sản phẩm, chính sách hoặc tư vấn hành vi.
+            A new chat session has started. You can continue asking about products, policies, or behavior-based guidance.
         </div>
     `;
 });
@@ -235,7 +254,7 @@ productGrid.addEventListener("click", (event) => {
         return;
     }
     const input = document.getElementById("chat-input");
-    input.value = `Tư vấn giúp tôi về sản phẩm ${product.name} thuộc danh mục ${product.category}.`;
+    input.value = `Help me evaluate the product ${product.name} in the ${product.category} category.`;
     input.focus();
 });
 
