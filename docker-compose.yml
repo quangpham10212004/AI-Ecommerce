@@ -1,0 +1,131 @@
+version: '3.8'
+services:
+  api_gateway:
+    build:
+      context: ./api_gateway
+    ports:
+    - 8000:80
+    depends_on:
+    - user_service
+    - product_service
+    - order_service
+    - behavior_service
+    - rag_chat_service
+    networks:
+    - eccom_network
+  user_service:
+    build:
+      context: ./user_service
+    ports:
+    - 8001:8000
+    volumes:
+    - ./user_service:/app
+    environment:
+      DB_NAME: user_db
+      DB_USER: root
+      DB_PASSWORD: rootpassword
+      DB_HOST: mysql_db
+      DB_PORT: '3306'
+    depends_on:
+    - mysql_db
+    networks:
+    - eccom_network
+  product_service:
+    build:
+      context: ./product_service
+    ports:
+    - 8002:8000
+    volumes:
+    - ./product_service:/app
+    environment:
+    - POSTGRES_DB=product_db
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=postgres
+    - POSTGRES_HOST=postgres_db
+    depends_on:
+    - postgres_db
+    networks:
+    - eccom_network
+  order_service:
+    build:
+      context: ./order_service
+    ports:
+    - 8003:8000
+    volumes:
+    - ./order_service:/app
+    environment:
+    - POSTGRES_DB=order_db
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=postgres
+    - POSTGRES_HOST=postgres_db
+    depends_on:
+    - postgres_db
+    networks:
+    - eccom_network
+  behavior_service:
+    build:
+      context: ./behavior_service
+    ports:
+    - 8004:8000
+    volumes:
+    - ./behavior_service:/app
+    networks:
+    - eccom_network
+  rag_chat_service:
+    build:
+      context: ./rag_chat_service
+    ports:
+    - 8005:8000
+    volumes:
+    - ./rag_chat_service:/app
+    networks:
+    - eccom_network
+  postgres_db:
+    image: postgres:15
+    environment:
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=postgres
+    ports:
+    - 5433:5432
+    volumes:
+    - pgdata:/var/lib/postgresql/data
+    - ./init-dbs.sql:/docker-entrypoint-initdb.d/init-dbs.sql
+    networks:
+    - eccom_network
+  vector_db:
+    image: qdrant/qdrant
+    ports:
+    - 6334:6333
+    volumes:
+    - qdrant_data:/qdrant/storage
+    networks:
+    - eccom_network
+  mysql_db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: user_db
+    ports:
+    - 3307:3306
+    volumes:
+    - mysqldata:/var/lib/mysql
+    networks:
+    - eccom_network
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+    - 5050:80
+    depends_on:
+    - postgres_db
+    networks:
+    - eccom_network
+volumes:
+  pgdata: null
+  qdrant_data: null
+  mysqldata: null
+networks:
+  eccom_network:
+    driver: bridge

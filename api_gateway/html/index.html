@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Nền tảng phân tích hành vi khách hàng, tư vấn tri thức và chat RAG cho hệ e-commerce">
+    <title>Customer Behavior Advisor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="page-shell">
+        <header class="hero">
+            <div class="hero-copy">
+                <p class="eyebrow">E-commerce AI Console</p>
+                <h1>Phân tích hành vi khách hàng để tư vấn dịch vụ</h1>
+                <p class="hero-text">
+                    Một giao diện thống nhất để xem catalog, gọi mô hình `model_behavior`,
+                    khai thác knowledge base và chat tư vấn theo hướng RAG ngay trong hệ e-commerce.
+                </p>
+                <div class="hero-actions">
+                    <a href="#catalog-section" class="button button-primary">Khám phá sản phẩm</a>
+                    <a href="#advisor-section" class="button button-secondary">Mở AI Advisor</a>
+                </div>
+            </div>
+            <div class="hero-panel">
+                <div class="metric-card">
+                    <span class="metric-label">Mô hình hành vi</span>
+                    <strong>Deep Learning Ready</strong>
+                    <p>Gọi service dự đoán để trả về các sản phẩm phù hợp theo hành vi.</p>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Knowledge Base</span>
+                    <strong>RAG Consultation</strong>
+                    <p>Tư vấn bằng truy xuất tri thức kết hợp hội thoại tự nhiên.</p>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard">
+            <section class="status-strip" id="status-strip">
+                <article class="status-card">
+                    <span>Gateway</span>
+                    <strong id="gateway-status">Đang kiểm tra</strong>
+                </article>
+                <article class="status-card">
+                    <span>Catalog</span>
+                    <strong id="catalog-status">Chưa tải</strong>
+                </article>
+                <article class="status-card">
+                    <span>Behavior API</span>
+                    <strong id="behavior-status">Chưa kiểm tra</strong>
+                </article>
+                <article class="status-card">
+                    <span>RAG Chat</span>
+                    <strong id="chat-status">Chưa kiểm tra</strong>
+                </article>
+            </section>
+
+            <section class="grid-layout">
+                <article class="panel panel-highlight" id="advisor-section">
+                    <div class="panel-head">
+                        <div>
+                            <p class="panel-kicker">AI Advisor</p>
+                            <h2>Phân tích hành vi khách hàng</h2>
+                        </div>
+                    </div>
+                    <p class="panel-description">
+                        Nhập nhanh tín hiệu hành vi để gọi service gợi ý. Kết quả sẽ liên kết với catalog phía dưới.
+                    </p>
+                    <form id="behavior-form" class="behavior-form">
+                        <label>
+                            Mã khách hàng
+                            <input type="text" id="customer-id" name="customer_id" placeholder="user_001">
+                        </label>
+                        <label>
+                            Hành vi gần nhất
+                            <select id="behavior-signal" name="signal">
+                                <option value="viewed_workstation">Xem thiết bị làm việc</option>
+                                <option value="viewed_audio">Xem audio premium</option>
+                                <option value="accessory_focused">Quan tâm phụ kiện</option>
+                                <option value="high_value_cart">Đã thêm sản phẩm giá trị cao</option>
+                            </select>
+                        </label>
+                        <label>
+                            Mục tiêu tư vấn
+                            <input type="text" id="business-goal" name="goal" placeholder="Tư vấn combo làm việc tại nhà">
+                        </label>
+                        <button type="submit" class="button button-primary">Chạy model_behavior</button>
+                    </form>
+                    <div class="insight-box">
+                        <h3>Kết quả mô hình</h3>
+                        <p id="behavior-summary">Chưa có dự đoán. Hãy gửi tín hiệu hành vi để lấy danh sách gợi ý.</p>
+                        <div class="recommendation-chips" id="recommendation-chips"></div>
+                    </div>
+                </article>
+
+                <article class="panel">
+                    <div class="panel-head">
+                        <div>
+                            <p class="panel-kicker">Knowledge Base</p>
+                            <h2>Tri thức tư vấn</h2>
+                        </div>
+                    </div>
+                    <p class="panel-description">
+                        Gói tri thức này mô phỏng kho policy, ưu đãi, combo đề xuất và ngữ cảnh nghiệp vụ để phục vụ RAG.
+                    </p>
+                    <div class="kb-list">
+                        <div class="kb-item">
+                            <strong>Chính sách khuyến mãi</strong>
+                            <span>Thông tin giảm giá, membership, ưu đãi theo hành vi.</span>
+                        </div>
+                        <div class="kb-item">
+                            <strong>Playbook upsell</strong>
+                            <span>Combo bàn phím, chuột, tai nghe, workstation và phụ kiện.</span>
+                        </div>
+                        <div class="kb-item">
+                            <strong>FAQ hỗ trợ mua hàng</strong>
+                            <span>Kho câu hỏi thường gặp được dùng làm nguồn truy xuất cho chat.</span>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <section class="panel catalog-panel" id="catalog-section">
+                <div class="panel-head panel-head-stack">
+                    <div>
+                        <p class="panel-kicker">Product Service</p>
+                        <h2>Catalog tích hợp e-commerce</h2>
+                    </div>
+                    <div class="catalog-tools">
+                        <input type="search" id="product-search" placeholder="Tìm theo tên hoặc danh mục">
+                        <button type="button" class="button button-secondary" id="reload-products">Tải lại dữ liệu</button>
+                    </div>
+                </div>
+                <div class="catalog-meta">
+                    <span id="catalog-meta-text">Đang tải sản phẩm...</span>
+                </div>
+                <div class="product-grid" id="product-grid"></div>
+            </section>
+        </main>
+
+        <aside class="chat-dock">
+            <div class="chat-shell">
+                <div class="chat-head">
+                    <div>
+                        <p class="panel-kicker">RAG Assistant</p>
+                        <h2>Chat tư vấn dịch vụ</h2>
+                    </div>
+                    <button type="button" class="button button-secondary button-small" id="clear-chat">Xóa chat</button>
+                </div>
+                <div class="chat-log" id="chat-log">
+                    <div class="chat-message chat-message-bot">
+                        Xin chào. Tôi có thể tư vấn dựa trên knowledge base, gợi ý hành vi và catalog sản phẩm hiện có.
+                    </div>
+                </div>
+                <form id="chat-form" class="chat-form">
+                    <textarea id="chat-input" rows="3" placeholder="Ví dụ: Gợi ý combo cho người dùng đang quan tâm setup làm việc tại nhà"></textarea>
+                    <button type="submit" class="button button-primary">Gửi truy vấn RAG</button>
+                </form>
+            </div>
+        </aside>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
