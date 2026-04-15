@@ -1,10 +1,14 @@
 const fallbackProducts = [
-    { id: 1, name: "Sony WH-1000XM5 Headphones", category: "Audio", price: "$319", ai_match: 98, image_icon: "H" },
-    { id: 2, name: "Keychron Q1 Mechanical Keyboard", category: "Accessories", price: "$154", ai_match: 92, image_icon: "K" },
-    { id: 3, name: "Logitech MX Master 3S Mouse", category: "Accessories", price: "$100", ai_match: 88, image_icon: "M" },
-    { id: 4, name: "LG UltraGear 27 Monitor", category: "Monitors", price: "$340", ai_match: null, image_icon: "L" },
-    { id: 5, name: "MacBook Pro M3 14", category: "Laptop", price: "$1,600", ai_match: 81, image_icon: "P" },
-    { id: 6, name: "Aluminum Laptop Stand", category: "Accessories", price: "$18", ai_match: 75, image_icon: "A" }
+    { id: 1, name: "Sony WH-1000XM5", category: "Audio", price: "8990000", ai_match: 95, image_icon: "H" },
+    { id: 2, name: "Keychron Q1", category: "Accessories", price: "4290000", ai_match: 91, image_icon: "K" },
+    { id: 3, name: "Logitech MX Master 3S", category: "Accessories", price: "2490000", ai_match: 93, image_icon: "M" },
+    { id: 4, name: "LG UltraGear 27", category: "Monitor", price: "6790000", ai_match: 88, image_icon: "L" },
+    { id: 5, name: "Dell XPS 13", category: "Laptop", price: "32990000", ai_match: 90, image_icon: "D" },
+    { id: 6, name: "MacBook Air M3", category: "Laptop", price: "28990000", ai_match: 94, image_icon: "M" },
+    { id: 7, name: "Anker 737 Power Bank", category: "Accessories", price: "3190000", ai_match: 84, image_icon: "A" },
+    { id: 8, name: "Samsung T7 Shield 1TB", category: "Storage", price: "2590000", ai_match: 86, image_icon: "S" },
+    { id: 9, name: "JBL Flip 6", category: "Audio", price: "2590000", ai_match: 82, image_icon: "J" },
+    { id: 10, name: "Rain Design mStand", category: "Accessories", price: "1590000", ai_match: 80, image_icon: "R" }
 ];
 
 const state = {
@@ -17,7 +21,8 @@ const state = {
 const endpointMap = {
     products: "/api/products/",
     recommend: "/api/behavior/recommend/",
-    chat: "/api/chat/"
+    chat: "/api/chat/",
+    chatStatus: "/api/chat/status/"
 };
 
 const productGrid = document.getElementById("product-grid");
@@ -25,7 +30,9 @@ const productSearch = document.getElementById("product-search");
 const catalogMetaText = document.getElementById("catalog-meta-text");
 const recommendationChips = document.getElementById("recommendation-chips");
 const behaviorSummary = document.getElementById("behavior-summary");
+const featureList = document.getElementById("feature-list");
 const chatLog = document.getElementById("chat-log");
+const chatFootnote = document.getElementById("chat-footnote");
 
 const productTranslations = {
     "Tai nghe Sony WH-1000XM5": "Sony WH-1000XM5 Headphones",
@@ -61,6 +68,14 @@ function escapeHtml(value) {
         .replaceAll("'", "&#39;");
 }
 
+function formatPrice(value) {
+    const raw = String(value ?? "").replaceAll(",", "").trim();
+    if (!raw || Number.isNaN(Number(raw))) {
+        return String(value || "Contact us");
+    }
+    return `${Number(raw).toLocaleString("en-US")} VND`;
+}
+
 function isRecommended(productId) {
     return state.recommendationIds.includes(productId);
 }
@@ -92,7 +107,7 @@ function renderProducts(products) {
                     <h3>${escapeHtml(product.name)}</h3>
                     <p class="product-category">${escapeHtml(product.category || "Uncategorized")}</p>
                     <div class="product-footer">
-                        <strong>${escapeHtml(product.price || "Contact us")}</strong>
+                        <strong>${escapeHtml(formatPrice(product.price))}</strong>
                         <button type="button" class="button button-small button-secondary" data-product-id="${product.id}">
                             Use in chat
                         </button>
@@ -153,12 +168,49 @@ async function loadProducts() {
     syncCatalogMeta();
 }
 
-function addChatMessage(text, role) {
+function addChatMessage(text, role, meta = {}) {
     const item = document.createElement("div");
     item.className = `chat-message ${role === "user" ? "chat-message-user" : "chat-message-bot"}`;
-    item.textContent = text;
+
+    if (role === "user") {
+        item.textContent = text;
+    } else {
+        const sources = Array.isArray(meta.sources) && meta.sources.length
+            ? `<div class="chat-meta"><strong>Sources:</strong> ${meta.sources.map(escapeHtml).join(", ")}</div>`
+            : "";
+        const documents = Array.isArray(meta.documents) && meta.documents.length
+            ? `<div class="chat-documents">${meta.documents.map((document) => `
+                <div class="chat-doc">
+                    <strong>${escapeHtml(document.title)}</strong>
+                    <span>score ${escapeHtml(document.score)}</span>
+                </div>
+            `).join("")}</div>`
+            : "";
+
+        item.innerHTML = `
+            <div>${escapeHtml(text)}</div>
+            ${sources}
+            ${documents}
+        `;
+    }
+
     chatLog.appendChild(item);
     chatLog.scrollTop = chatLog.scrollHeight;
+}
+
+function renderFeatureList(inputFeatures = {}) {
+    const activeEntries = Object.entries(inputFeatures)
+        .filter(([, value]) => Number(value) > 0)
+        .sort((left, right) => Number(right[1]) - Number(left[1]));
+
+    if (!activeEntries.length) {
+        featureList.innerHTML = "";
+        return;
+    }
+
+    featureList.innerHTML = activeEntries
+        .map(([label, value]) => `<span class="chip chip-muted">${escapeHtml(label)}: ${escapeHtml(Number(value).toFixed(2))}</span>`)
+        .join("");
 }
 
 async function runBehaviorModel(payload) {
@@ -172,20 +224,27 @@ async function runBehaviorModel(payload) {
         const recommendedProducts = state.products.filter((product) => state.recommendationIds.includes(product.id));
 
         if (recommendedProducts.length) {
-            behaviorSummary.textContent = `The model recommended ${recommendedProducts.length} products for the submitted customer signal.`;
+            const topRecommendation = data.recommendations?.[0];
+            behaviorSummary.textContent = `Deep learning model ${data.model_family} ranked ${recommendedProducts.length} matching products. Top result: ${topRecommendation?.name || recommendedProducts[0].name}.`;
             recommendationChips.innerHTML = recommendedProducts
-                .map((product) => `<span class="chip">${escapeHtml(product.name)}</span>`)
+                .map((product) => {
+                    const recommendation = (data.recommendations || []).find((item) => item.product_id === product.id);
+                    const suffix = recommendation ? ` (${recommendation.score})` : "";
+                    return `<span class="chip">${escapeHtml(product.name)}${escapeHtml(suffix)}</span>`;
+                })
                 .join("");
         } else {
             behaviorSummary.textContent = "The model responded, but none of the recommended items matched the current catalog.";
             recommendationChips.innerHTML = "";
         }
 
+        renderFeatureList(data.input_features || {});
         setStatus("behavior-status", "Ready", "ok");
         renderProducts(state.filteredProducts);
     } catch (error) {
         behaviorSummary.textContent = "The behavior service could not be reached. Check the behavior_service container or the gateway.";
         recommendationChips.innerHTML = "";
+        featureList.innerHTML = "";
         setStatus("behavior-status", "Connection error", "error");
     }
 }
@@ -199,10 +258,15 @@ async function sendChat(query) {
             method: "POST",
             body: JSON.stringify({ query })
         });
-        addChatMessage(data.response || "The RAG service returned an empty response.", "bot");
+        addChatMessage(data.response || "The RAG service returned an empty response.", "bot", {
+            sources: data.sources,
+            documents: data.retrieved_documents
+        });
+        chatFootnote.textContent = `RAG backend: ${data.index_backend || "unknown"} | Retrieved ${data.retrieved_documents?.length || 0} documents`;
         setStatus("chat-status", "Responded", "ok");
     } catch (error) {
         addChatMessage("The RAG chat service could not be reached. Check the endpoint or the corresponding container.", "bot");
+        chatFootnote.textContent = "RAG status unavailable.";
         setStatus("chat-status", "Connection error", "error");
     }
 }
@@ -211,12 +275,30 @@ function checkGateway() {
     setStatus("gateway-status", "Online", "ok");
 }
 
+async function checkChatBackend() {
+    try {
+        const data = await fetchJson(endpointMap.chatStatus);
+        chatFootnote.textContent = `Knowledge base indexed: ${data.documents_indexed} documents via ${data.backend}.`;
+        setStatus("chat-status", `Indexed via ${data.backend}`, "ok");
+    } catch (error) {
+        chatFootnote.textContent = "Knowledge base status is not available yet.";
+    }
+}
+
 document.getElementById("behavior-form").addEventListener("submit", async (event) => {
     event.preventDefault();
     const payload = {
-        customer_id: document.getElementById("customer-id").value.trim(),
-        signal: document.getElementById("behavior-signal").value,
-        goal: document.getElementById("business-goal").value.trim()
+        preferred_category: document.getElementById("preferred-category").value,
+        search_terms: document.getElementById("search-terms").value.trim(),
+        recent_views: document.getElementById("recent-views").value
+            .split(",")
+            .map((item) => item.trim())
+            .filter(Boolean),
+        cart_value: Number(document.getElementById("cart-value").value || 0),
+        premium_intent: Number(document.getElementById("premium-intent").value || 0),
+        productivity_intent: Number(document.getElementById("productivity-intent").value || 0),
+        mobility_intent: Number(document.getElementById("mobility-intent").value || 0),
+        support_intent: Number(document.getElementById("support-intent").value || 0)
     };
     await runBehaviorModel(payload);
 });
@@ -238,6 +320,7 @@ document.getElementById("clear-chat").addEventListener("click", () => {
             A new chat session has started. You can continue asking about products, policies, or behavior-based guidance.
         </div>
     `;
+    chatFootnote.textContent = "RAG status will appear here after the first retrieval.";
 });
 
 document.getElementById("reload-products").addEventListener("click", loadProducts);
@@ -260,3 +343,4 @@ productGrid.addEventListener("click", (event) => {
 
 checkGateway();
 loadProducts();
+checkChatBackend();

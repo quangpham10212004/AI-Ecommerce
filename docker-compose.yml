@@ -78,6 +78,8 @@ services:
     - 8105:8000
     volumes:
     - ./rag_chat_service:/app
+    depends_on:
+    - vector_db
     networks:
     - eccom_network
   postgres_db:

@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "title": "Sony WH-1000XM5 advisory",
+    "source": "kb/products/sony_wh1000xm5.md",
+    "tags": ["audio", "premium", "travel"],
+    "content": "Sony WH-1000XM5 is positioned as a premium headphone for customers who value noise cancellation, long sessions of focused work, and frequent travel. Sales guidance recommends pairing it with extended warranty coverage and membership incentives for premium shoppers."
+  },
+  {
+    "id": 2,
+    "title": "Keychron Q1 advisory",
+    "source": "kb/products/keychron_q1.md",
+    "tags": ["accessories", "keyboard", "productivity"],
+    "content": "Keychron Q1 targets users who want a premium typing experience, flexible customization, and an efficient desk setup for work or development. Recommended bundle items include an ergonomic mouse, monitor stand, and portable storage."
+  },
+  {
+    "id": 3,
+    "title": "Logitech MX Master 3S advisory",
+    "source": "kb/products/mx_master_3s.md",
+    "tags": ["accessories", "mouse", "workflow"],
+    "content": "Logitech MX Master 3S fits office users and creators who care about comfort, multi-device workflows, and daily productivity. Cross-sell guidance highlights keyboard bundles and laptop stand accessories."
+  },
+  {
+    "id": 4,
+    "title": "Laptop category playbook",
+    "source": "kb/policies/laptop_playbook.md",
+    "tags": ["laptop", "support", "upsell"],
+    "content": "Laptop shoppers usually respond well to protection plans, dongles, premium support, and mobile accessories. High-value baskets should prioritize after-sales reassurance and bundle recommendations."
+  },
+  {
+    "id": 5,
+    "title": "Promotion policy",
+    "source": "kb/policies/promotions.md",
+    "tags": ["promotion", "discount", "voucher"],
+    "content": "Promotion guidance recommends vouchers, accessory bundles, and loyalty incentives for new shoppers or high-intent buyers. Discount messaging should be paired with a clear explanation of long-term value."
+  },
+  {
+    "id": 6,
+    "title": "Work-from-home bundle playbook",
+    "source": "kb/policies/work_from_home.md",
+    "tags": ["bundle", "workstation", "accessories"],
+    "content": "A work-from-home bundle usually combines headphones, keyboard, mouse, and a laptop stand. The main goal is to improve productivity while increasing cart value through practical accessories."
+  }
+]

@@ -69,25 +69,45 @@
                         </div>
                     </div>
                     <p class="panel-description">
-                        Enter a recent behavior signal and run the recommendation service. The result links directly to the catalog below.
+                        Enter customer intent features and run the deep learning recommendation service. The result links directly to the catalog below.
                     </p>
                     <form id="behavior-form" class="behavior-form">
                         <label>
-                            Customer ID
-                            <input type="text" id="customer-id" name="customer_id" placeholder="user_001">
-                        </label>
-                        <label>
-                            Recent signal
-                            <select id="behavior-signal" name="signal">
-                                <option value="viewed_workstation">Viewed work setup devices</option>
-                                <option value="viewed_audio">Viewed premium audio</option>
-                                <option value="accessory_focused">Focused on accessories</option>
-                                <option value="high_value_cart">Added a high-value item to cart</option>
+                            Preferred category
+                            <select id="preferred-category" name="preferred_category">
+                                <option value="audio">Audio</option>
+                                <option value="accessories">Accessories</option>
+                                <option value="laptop">Laptop</option>
+                                <option value="monitor">Monitor</option>
                             </select>
                         </label>
                         <label>
-                            Advisory goal
-                            <input type="text" id="business-goal" name="goal" placeholder="Recommend a work-from-home bundle">
+                            Search terms
+                            <input type="text" id="search-terms" name="search_terms" placeholder="premium headphones for travel">
+                        </label>
+                        <label>
+                            Recent views
+                            <input type="text" id="recent-views" name="recent_views" placeholder="sony wh-1000xm5, jbl flip 6">
+                        </label>
+                        <label>
+                            Cart value (VND)
+                            <input type="number" id="cart-value" name="cart_value" min="0" step="100000" value="12000000">
+                        </label>
+                        <label>
+                            Premium intent (0-1)
+                            <input type="number" id="premium-intent" name="premium_intent" min="0" max="1" step="0.1" value="0.8">
+                        </label>
+                        <label>
+                            Productivity intent (0-1)
+                            <input type="number" id="productivity-intent" name="productivity_intent" min="0" max="1" step="0.1" value="0.4">
+                        </label>
+                        <label>
+                            Mobility intent (0-1)
+                            <input type="number" id="mobility-intent" name="mobility_intent" min="0" max="1" step="0.1" value="0.6">
+                        </label>
+                        <label>
+                            Support intent (0-1)
+                            <input type="number" id="support-intent" name="support_intent" min="0" max="1" step="0.1" value="0.2">
                         </label>
                         <button type="submit" class="button button-primary">Run behavior model</button>
                     </form>
@@ -95,6 +115,7 @@
                         <h3>Model output</h3>
                         <p id="behavior-summary">No prediction yet. Submit a behavior signal to generate recommendations.</p>
                         <div class="recommendation-chips" id="recommendation-chips"></div>
+                        <div class="feature-list" id="feature-list"></div>
                     </div>
                 </article>
 
@@ -106,7 +127,7 @@
                         </div>
                     </div>
                     <p class="panel-description">
-                        This knowledge layer simulates policies, promotions, bundle playbooks, and operational context used by the RAG assistant.
+                        This knowledge layer stores advisory documents, promotion policies, and bundle playbooks that are retrieved before answer generation.
                     </p>
                     <div class="kb-list">
                         <div class="kb-item">
@@ -118,8 +139,8 @@
                             <span>Recommended bundles for keyboards, mice, audio, workstations, and accessories.</span>
                         </div>
                         <div class="kb-item">
-                            <strong>Support FAQ</strong>
-                            <span>A reusable set of questions and answers that powers retrieval for chat.</span>
+                            <strong>Retrieved context</strong>
+                            <span>The assistant retrieves top matching documents, then generates a final answer with source traceability.</span>
                         </div>
                     </div>
                 </article>
@@ -161,6 +182,7 @@
                     <textarea id="chat-input" rows="3" placeholder="Example: Suggest a bundle for a customer building a work-from-home setup"></textarea>
                     <button type="submit" class="button button-primary">Send RAG query</button>
                 </form>
+                <div class="chat-footnote" id="chat-footnote">RAG status will appear here after the first retrieval.</div>
             </div>
         </aside>
     </div>

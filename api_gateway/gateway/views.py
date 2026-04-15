@@ -86,8 +86,8 @@ def behavior_proxy(request):
 
 
 @csrf_exempt
-def chat_proxy(request):
-    return _proxy_request(request, "chat")
+def chat_proxy(request, upstream_path=""):
+    return _proxy_request(request, "chat", upstream_path)
 
 
 @csrf_exempt

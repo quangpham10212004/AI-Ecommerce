@@ -316,7 +316,8 @@ h2 {
 }
 
 .recommendation-chips,
-.product-badges {
+.product-badges,
+.feature-list {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -339,6 +340,12 @@ h2 {
   background: #2d6d58;
   color: #f4fff9;
   border: 1px solid #1a4d3e;
+}
+
+.chip-muted {
+  background: rgba(255, 250, 243, 0.9);
+  color: var(--accent-dark);
+  border: 1px solid rgba(182, 85, 31, 0.2);
 }
 
 .pill-muted {
@@ -514,6 +521,41 @@ h2 {
 .chat-form textarea {
   resize: none;
   min-height: 50px;
+}
+
+.chat-meta {
+  margin-top: 10px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.chat-documents {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.chat-doc {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(246, 239, 228, 0.9);
+  border: 1px solid rgba(100, 64, 34, 0.08);
+  font-size: 0.8rem;
+}
+
+.chat-doc span {
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.chat-footnote {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
 }
 
 @media (max-width: 1200px) {
