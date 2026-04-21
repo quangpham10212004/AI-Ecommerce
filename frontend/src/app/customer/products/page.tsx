@@ -4,6 +4,7 @@ import { Search, SlidersHorizontal, X } from 'lucide-react'
 import api from '@/lib/api'
 import ProductCard from '@/components/product/ProductCard'
 import { ProductCardSkeleton } from '@/components/ui/Skeleton'
+import AIRecommendBar from '@/components/chat/AIRecommendBar'
 import type { Product } from '@/types'
 
 const CATEGORIES = ['Tất cả', 'Audio', 'Laptop', 'Monitor', 'Accessories', 'Storage']
@@ -93,6 +94,9 @@ export default function ProductsPage() {
           </button>
         ))}
       </div>
+
+      {/* AI Recommend Bar — hiện khi có search */}
+      {deferred && <AIRecommendBar query={deferred} label={`AI gợi ý cho "${deferred}"`} />}
 
       {/* Result count */}
       <div className="flex items-center gap-2">

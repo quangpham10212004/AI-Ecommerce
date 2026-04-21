@@ -1,174 +1,102 @@
-import json
-import math
+import os
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
+import numpy as np
 from functools import lru_cache
 from pathlib import Path
 
+MODEL_PATH = Path(__file__).resolve().parent / "assets" / "model_lstm.h5"
 
-MODEL_PATH = Path(__file__).resolve().parent / "assets" / "lstm_model.json"
+# LabelEncoder fit order (sklearn alphabetical sort)
+ACTION_CLASSES = ["add_to_cart", "click", "purchase", "remove_from_cart", "review", "search", "view", "wishlist"]
+ACTION_TO_IDX = {a: i for i, a in enumerate(ACTION_CLASSES)}
 
-PRODUCT_CATALOG = {
-    1: {"name": "Sony WH-1000XM5", "reason": "strong audio and premium-travel preference"},
-    2: {"name": "Keychron Q1", "reason": "high productivity and accessories affinity"},
-    3: {"name": "Logitech MX Master 3S", "reason": "workspace and productivity workflow fit"},
-    4: {"name": "LG UltraGear 27", "reason": "monitor-upgrade intent detected"},
-    5: {"name": "Dell XPS 13", "reason": "premium laptop shopping signal"},
-    6: {"name": "MacBook Air M3", "reason": "high-value mobile computing interest"},
-    7: {"name": "Anker 737 Power Bank", "reason": "mobility and accessory bundling opportunity"},
-    8: {"name": "Samsung T7 Shield 1TB", "reason": "portable storage cross-sell potential"},
-    9: {"name": "JBL Flip 6", "reason": "audio lifestyle signal with portable usage"},
-    10: {"name": "Rain Design mStand", "reason": "desk setup and ergonomic accessory fit"},
+# Map predicted next-action → intent signal → recommended product ids
+ACTION_INTENT = {
+    "purchase":        {"intent": "high_purchase", "categories": ["Audio", "Laptop"]},
+    "add_to_cart":     {"intent": "cart_intent",   "categories": ["Accessories", "Audio"]},
+    "wishlist":        {"intent": "wishlist",       "categories": ["Laptop", "Monitor"]},
+    "view":            {"intent": "browsing",       "categories": ["Audio", "Accessories"]},
+    "click":           {"intent": "interest",       "categories": ["Monitor", "Storage"]},
+    "search":          {"intent": "searching",      "categories": ["Laptop", "Audio"]},
+    "review":          {"intent": "post_purchase",  "categories": ["Accessories"]},
+    "remove_from_cart":{"intent": "reconsidering",  "categories": ["Audio", "Laptop"]},
 }
 
-CATEGORY_KEYWORDS = {
-    "audio_interest": {"audio", "headphone", "tai nghe", "speaker", "loa"},
-    "accessory_interest": {"accessory", "phu kien", "keyboard", "mouse", "stand"},
-    "laptop_interest": {"laptop", "macbook", "xps", "notebook"},
-    "monitor_interest": {"monitor", "display", "man hinh", "screen"},
+CATEGORY_PRODUCTS = {
+    "Audio":       [{"product_id": 1, "name": "Sony WH-1000XM5",        "reason": "Top audio pick"},
+                    {"product_id": 9, "name": "JBL Flip 6",              "reason": "Portable audio"}],
+    "Accessories": [{"product_id": 2, "name": "Keychron Q1",             "reason": "Productivity accessory"},
+                    {"product_id": 3, "name": "Logitech MX Master 3S",   "reason": "Workflow accessory"},
+                    {"product_id": 10,"name": "Rain Design mStand",       "reason": "Desk setup"}],
+    "Laptop":      [{"product_id": 5, "name": "Dell XPS 13",             "reason": "Premium laptop"},
+                    {"product_id": 6, "name": "MacBook Air M3",           "reason": "Apple ecosystem"}],
+    "Monitor":     [{"product_id": 4, "name": "LG UltraGear 27",         "reason": "Display upgrade"}],
+    "Storage":     [{"product_id": 8, "name": "Samsung T7 Shield 1TB",   "reason": "Portable storage"},
+                    {"product_id": 7, "name": "Anker 737 Power Bank",     "reason": "Mobile power"}],
 }
-
-
-def _sigmoid(value):
-    return 1.0 / (1.0 + math.exp(-value))
-
-
-def _vector_matrix_sum(input_vector, hidden_vector, gate_weights):
-    outputs = []
-    for input_weights, recurrent_weights, bias in zip(
-        gate_weights["kernel"],
-        gate_weights["recurrent_kernel"],
-        gate_weights["bias"],
-    ):
-        total = bias
-        total += sum(value * weight for value, weight in zip(input_vector, input_weights))
-        total += sum(value * weight for value, weight in zip(hidden_vector, recurrent_weights))
-        outputs.append(total)
-    return outputs
-
-
-def _softmax(logits):
-    max_logit = max(logits)
-    exps = [math.exp(logit - max_logit) for logit in logits]
-    total = sum(exps)
-    return [value / total for value in exps]
-
-
-def _normalize_text(value):
-    return str(value or "").strip().lower()
-
-
-def _contains_any(value, keywords):
-    normalized_value = _normalize_text(value)
-    return any(keyword in normalized_value for keyword in keywords)
-
-
-def _build_feature_sequence(features, model):
-    return [
-        [features[label] for label in timestep_labels]
-        for timestep_labels in model["sequence_labels"]
-    ]
-
-
-def _run_lstm(sequence, model):
-    hidden_state = [0.0] * model["hidden_size"]
-    cell_state = [0.0] * model["hidden_size"]
-
-    for timestep in sequence:
-        forget_gate = [
-            _sigmoid(value)
-            for value in _vector_matrix_sum(timestep, hidden_state, model["forget_gate"])
-        ]
-        input_gate = [
-            _sigmoid(value)
-            for value in _vector_matrix_sum(timestep, hidden_state, model["input_gate"])
-        ]
-        candidate_gate = [
-            math.tanh(value)
-            for value in _vector_matrix_sum(timestep, hidden_state, model["candidate_gate"])
-        ]
-        output_gate = [
-            _sigmoid(value)
-            for value in _vector_matrix_sum(timestep, hidden_state, model["output_gate"])
-        ]
-
-        cell_state = [
-            (forget_value * previous_cell) + (input_value * candidate_value)
-            for forget_value, previous_cell, input_value, candidate_value in zip(
-                forget_gate,
-                cell_state,
-                input_gate,
-                candidate_gate,
-            )
-        ]
-        hidden_state = [
-            output_value * math.tanh(cell_value)
-            for output_value, cell_value in zip(output_gate, cell_state)
-        ]
-
-    return hidden_state
 
 
 @lru_cache(maxsize=1)
 def load_model():
-    with MODEL_PATH.open("r", encoding="utf-8") as model_file:
-        return json.load(model_file)
+    import tensorflow as tf
+    try:
+        return tf.keras.models.load_model(str(MODEL_PATH), compile=False)
+    except Exception:
+        # Fallback: rebuild architecture and load weights only
+        model = tf.keras.Sequential([
+            tf.keras.layers.Input(shape=(10, 1)),
+            tf.keras.layers.LSTM(64),
+            tf.keras.layers.Dense(8, activation="softmax"),
+        ])
+        model.load_weights(str(MODEL_PATH))
+        return model
 
 
-def _build_feature_vector(payload):
-    recent_views = payload.get("recent_views") or []
-    preferred_category = payload.get("preferred_category", "")
-    search_terms = payload.get("search_terms", "")
-    combined_text = " ".join([preferred_category, search_terms, " ".join(str(item) for item in recent_views)])
-
-    cart_value = float(payload.get("cart_value", 0) or 0)
-    recent_views_count = len(recent_views)
-
-    features = {
-        "cart_value_norm": min(cart_value / 40000000.0, 1.0),
-        "recent_views_count_norm": min(recent_views_count / 10.0, 1.0),
-        "audio_interest": 1.0 if _contains_any(combined_text, CATEGORY_KEYWORDS["audio_interest"]) else 0.0,
-        "accessory_interest": 1.0 if _contains_any(combined_text, CATEGORY_KEYWORDS["accessory_interest"]) else 0.0,
-        "laptop_interest": 1.0 if _contains_any(combined_text, CATEGORY_KEYWORDS["laptop_interest"]) else 0.0,
-        "monitor_interest": 1.0 if _contains_any(combined_text, CATEGORY_KEYWORDS["monitor_interest"]) else 0.0,
-        "premium_intent": min(float(payload.get("premium_intent", 0) or 0), 1.0),
-        "productivity_intent": min(float(payload.get("productivity_intent", 0) or 0), 1.0),
-        "mobility_intent": min(float(payload.get("mobility_intent", 0) or 0), 1.0),
-        "support_intent": min(float(payload.get("support_intent", 0) or 0), 1.0),
-    }
-    return features
+def _encode_sequence(recent_actions: list[str]) -> np.ndarray:
+    """Convert list of action strings → padded sequence of shape (1, 10, 1)."""
+    encoded = [ACTION_TO_IDX.get(a, ACTION_TO_IDX["view"]) for a in recent_actions]
+    # pre-pad to length 10
+    padded = ([0] * max(0, 10 - len(encoded)) + encoded)[-10:]
+    return np.array(padded, dtype=np.float32).reshape(1, 10, 1)
 
 
-def predict_products(payload, top_k=3):
+def predict_products(payload: dict, top_k: int = 3) -> dict:
+    recent_actions = payload.get("recent_actions") or ["view"] * 5
     model = load_model()
-    features = _build_feature_vector(payload)
-    sequence = _build_feature_sequence(features, model)
-    hidden_layer = _run_lstm(sequence, model)
-    logits = [
-        sum(weight * hidden_value for weight, hidden_value in zip(weights, hidden_layer)) + bias
-        for weights, bias in zip(model["output_weights"], model["output_biases"])
-    ]
-    probabilities = _softmax(logits)
 
-    ranked_predictions = sorted(
-        zip(model["output_labels"], probabilities),
-        key=lambda item: item[1],
-        reverse=True,
-    )[:top_k]
+    seq = _encode_sequence(recent_actions)
+    probs = model.predict(seq, verbose=0)[0]          # shape (8,)
+    predicted_idx = int(np.argmax(probs))
+    predicted_action = ACTION_CLASSES[predicted_idx]
+    confidence = float(probs[predicted_idx])
 
+    intent_info = ACTION_INTENT.get(predicted_action, ACTION_INTENT["view"])
+    categories = intent_info["categories"]
+
+    # Collect product recommendations from predicted categories
     recommendations = []
-    for product_id, score in ranked_predictions:
-        catalog_entry = PRODUCT_CATALOG[product_id]
-        recommendations.append(
-            {
-                "product_id": product_id,
-                "name": catalog_entry["name"],
-                "score": round(score, 4),
-                "reason": catalog_entry["reason"],
-            }
-        )
+    seen = set()
+    for cat in categories:
+        for prod in CATEGORY_PRODUCTS.get(cat, []):
+            if prod["product_id"] not in seen:
+                recommendations.append({
+                    "product_id": prod["product_id"],
+                    "name": prod["name"],
+                    "score": round(confidence, 4),
+                    "reason": f"{prod['reason']} — predicted next action: {predicted_action}",
+                })
+                seen.add(prod["product_id"])
+            if len(recommendations) >= top_k:
+                break
+        if len(recommendations) >= top_k:
+            break
 
     return {
         "model_type": "lstm",
-        "input_features": features,
-        "sequence_steps": sequence,
+        "predicted_next_action": predicted_action,
+        "confidence": round(confidence, 4),
+        "intent": intent_info["intent"],
         "recommendations": recommendations,
+        "input_sequence": recent_actions,
     }

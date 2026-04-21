@@ -2,6 +2,7 @@ import { useCartStore } from '@/stores/cartStore'
 import { productIcon, fmtPrice } from '@/lib/utils'
 import { Trash2, ShoppingBag, ArrowRight, Minus, Plus } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import AIRecommendBar from '@/components/chat/AIRecommendBar'
 
 export default function CartPage() {
   const { items, remove, changeQty, total, count } = useCartStore()
@@ -64,6 +65,12 @@ export default function CartPage() {
           Thanh toán <ArrowRight size={14} />
         </Link>
       </div>
+
+      {/* AI gợi ý dựa trên giỏ hàng */}
+      <AIRecommendBar
+        query={items.map(i => i.name).join(', ')}
+        label="Có thể bạn cũng thích"
+      />
     </div>
   )
 }

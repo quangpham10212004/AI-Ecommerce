@@ -7,15 +7,13 @@ from .inference import predict_products
 class BehaviorPredictView(APIView):
     def post(self, request):
         result = predict_products(request.data)
-        return Response(
-            {
-                "model_family": "lstm",
-                "model_architecture": result["model_type"],
-                "recommended_product_ids": [
-                    item["product_id"] for item in result["recommendations"]
-                ],
-                "recommendations": result["recommendations"],
-                "input_features": result["input_features"],
-                "sequence_steps": result["sequence_steps"],
-            }
-        )
+        return Response({
+            "model_family": "lstm",
+            "model_architecture": result["model_type"],
+            "predicted_next_action": result["predicted_next_action"],
+            "confidence": result["confidence"],
+            "intent": result["intent"],
+            "recommended_product_ids": [r["product_id"] for r in result["recommendations"]],
+            "recommendations": result["recommendations"],
+            "input_sequence": result["input_sequence"],
+        })

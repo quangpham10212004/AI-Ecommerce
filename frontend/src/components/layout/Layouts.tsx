@@ -1,14 +1,14 @@
 import { Outlet } from 'react-router-dom'
 import CustomerNav from './CustomerNav'
 import Sidebar from './Sidebar'
-import ChatWidget from '@/components/chat/ChatWidget'
+import AIChatPanel from '@/components/chat/AIChatPanel'
 
 export function CustomerLayout() {
   return (
     <div className="min-h-screen bg-bg">
       <CustomerNav />
       <main><Outlet /></main>
-      <ChatWidget />
+      <AIChatPanel />
     </div>
   )
 }
