@@ -1,7 +1,12 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .rag_engine import ensure_knowledge_base, generate_answer, retrieve_documents
+from .rag_engine import (
+    ensure_knowledge_base,
+    generate_answer,
+    get_neo4j_graph_stats,
+    retrieve_documents,
+)
 
 
 class ChatAPIView(APIView):
@@ -27,3 +32,22 @@ class ChatAPIView(APIView):
 class ChatKnowledgeBaseStatusAPIView(APIView):
     def get(self, request):
         return Response(ensure_knowledge_base())
+
+
+class ChatKnowledgeGraphStatusAPIView(APIView):
+    def get(self, request):
+        try:
+            return Response(
+                {
+                    "backend": "neo4j",
+                    "graph_stats": get_neo4j_graph_stats(),
+                }
+            )
+        except RuntimeError:
+            index_status = ensure_knowledge_base()
+            return Response(
+                {
+                    "backend": index_status["backend"],
+                    "graph_stats": index_status.get("graph_stats"),
+                }
+            )

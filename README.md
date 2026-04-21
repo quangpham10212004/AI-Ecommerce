@@ -1,144 +1,138 @@
-# Ecommerce AI Microservices
+# Ecommerce AI — Hướng dẫn sử dụng
 
-Project nay la he thong demo ecommerce tach theo microservice, dung Django REST Framework va `docker-compose` de chay dong bo cac thanh phan backend.
+Hệ thống ecommerce demo tích hợp AI, kiến trúc microservices với Django REST Framework backend và React frontend.
 
-## Kien truc
+---
 
-- `api_gateway`: giao dien demo va proxy request vao cac service ben duoi.
-- `user_service`: service nguoi dung, dung MySQL.
-- `product_service`: service san pham, dung PostgreSQL.
-- `order_service`: service don hang, dung PostgreSQL.
-- `behavior_service`: service goi y hanh vi, hien tai suy luan bang mo hinh deep learning MLP nho.
-- `rag_chat_service`: service chat/RAG demo, index tai lieu mau vao Qdrant va fallback in-memory khi can.
-- `init-dbs.sql`: tao them `product_db` va `order_db` khi PostgreSQL khoi dong.
+## Yêu cầu
 
-## Yeu cau
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/)
 
-- Docker
-- Docker Compose
+---
 
-Neu chay local khong dung Docker, moi service can cai dependency trong file `requirements.txt` rieng.
-
-## Cach chay nhanh
-
-Tai thu muc goc project:
+## Khởi động hệ thống
 
 ```bash
+# Clone repo và vào thư mục gốc
+cd ecommerce_ai
+
+# Build và chạy toàn bộ hệ thống
 docker compose up --build
 ```
 
-Sau khi cac container len xong:
+> Lần đầu build sẽ mất 5–15 phút do `behavior_service` cài TensorFlow.  
+> Các lần sau chạy lại chỉ cần `docker compose up`.
 
-- Gateway UI: `http://localhost:8000/`
-- User service: `http://localhost:8101/`
-- Product service: `http://localhost:8102/`
-- Order service: `http://localhost:8103/`
-- Behavior service: `http://localhost:8104/`
-- RAG chat service: `http://localhost:8105/`
-- PostgreSQL: `localhost:15433`
-- MySQL: `localhost:13307`
-- PgAdmin: `http://localhost:15050/`
+---
 
-Tai khoan PgAdmin mac dinh:
+## Truy cập sau khi khởi động
 
-- Email: `admin@admin.com`
-- Password: `admin`
+### 🌐 Frontend React (UI chính)
 
-## API chinh qua gateway
+| URL | Mô tả |
+|-----|-------|
+| **http://localhost:3001/login** | ✅ Trang đăng nhập — vào đây trước |
+| http://localhost:3001/customer/home | Trang chủ customer |
+| http://localhost:3001/admin/dashboard | Dashboard admin |
+| http://localhost:3001/staff/dashboard | Dashboard staff |
 
-Tat ca endpoint ben duoi co the goi qua `http://localhost:8000`.
+### 🔧 Backend & Tools
 
-### Product
+| URL | Mô tả |
+|-----|-------|
+| http://localhost:8000/ | Django Gateway UI (legacy) |
+| http://localhost:15050/ | PgAdmin (quản lý PostgreSQL) |
+| http://localhost:17474/ | Neo4j Browser (knowledge base RAG) |
 
-- `GET /api/products/`
-- `POST /api/products/`
-- `GET /api/products/{id}/`
-- `PUT/PATCH /api/products/{id}/`
-- `DELETE /api/products/{id}/`
+---
 
-Vi du tao san pham:
+## Tài khoản demo
 
-```bash
-curl -X POST http://localhost:8000/api/products/ \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Sony WH-1000XM5",
-    "category": "Audio",
-    "price": "8990000",
-    "ai_match": 95,
-    "image_icon": "headphones"
-  }'
+Mật khẩu tất cả tài khoản: **`123456`**
+
+| Role | Email |
+|------|-------|
+| Customer | `minhanh.customer@ecommerce.local` |
+| Staff | `sales.staff@ecommerce.local` |
+| Admin | `admin@ecommerce.local` |
+
+> Trên trang login, click nhanh vào tab **Customer / Staff / Admin** để tự điền thông tin.
+
+---
+
+## Luồng sử dụng cơ bản
+
+### Customer
+1. Vào http://localhost:3001/login → chọn tab **Customer** → Đăng nhập
+2. Duyệt sản phẩm tại `/customer/products`
+3. Thêm vào giỏ → Thanh toán tại `/customer/checkout`
+4. Xem đơn hàng tại `/customer/orders`
+5. Click icon 🤖 góc phải để chat với AI tư vấn
+
+### Staff
+1. Đăng nhập với tab **Staff**
+2. Quản lý đơn hàng tại `/staff/orders`
+
+### Admin
+1. Đăng nhập với tab **Admin**
+2. Xem tổng quan tại `/admin/dashboard`
+3. Quản lý sản phẩm (thêm/sửa/xóa) tại `/admin/products`
+4. Quản lý người dùng tại `/admin/users`
+
+---
+
+## Kiến trúc hệ thống
+
+```
+frontend/          React + Vite + Tailwind (port 3001)
+api_gateway/       Django proxy + legacy UI (port 8000)
+user_service/      Quản lý user, MySQL (port 8101)
+product_service/   Quản lý sản phẩm, PostgreSQL (port 8102)
+order_service/     Quản lý đơn hàng, PostgreSQL (port 8103)
+behavior_service/  LSTM recommendation model (port 8104)
+rag_chat_service/  RAG chatbot, Neo4j/Qdrant (port 8105)
+cart_service/      Giỏ hàng (port 8106)
+payment_service/   Thanh toán (port 8107)
+shipping_service/  Giao vận (port 8108)
 ```
 
-### Behavior recommendation
+---
 
-- `POST /api/behavior/recommend/`
-
-Vi du:
+## API chính (qua Gateway port 8000)
 
 ```bash
-curl -X POST http://localhost:8000/api/behavior/recommend/ \
-  -H "Content-Type: application/json" \
-  -d '{"user_id": 1, "recent_views": [1, 2, 3]}'
-```
+# Lấy danh sách sản phẩm
+GET  http://localhost:8000/api/products/
 
-Response hien tai la mock:
-
-```json
+# Tạo sản phẩm
+POST http://localhost:8000/api/products/
 {
-  "model_family": "deep-learning",
-  "recommended_product_ids": [1, 9, 5]
+  "name": "Sony WH-1000XM5",
+  "category": "Audio",
+  "price": "8990000",
+  "ai_match": 95,
+  "image_icon": "headphones"
 }
+
+# LSTM behavior recommendation
+POST http://localhost:8000/api/behavior/recommend/
+{"user_id": 1, "recent_views": [1, 2, 3]}
+
+# RAG chat
+POST http://localhost:8000/api/chat/
+{"query": "tư vấn tai nghe chống ồn"}
+
+# Đăng nhập
+POST http://localhost:8000/api/users/login/
+{"role": "customer", "email": "...", "password": "123456"}
 ```
 
-### RAG chat
+---
 
-- `POST /api/chat/`
-- `GET /api/chat/status/`
+## Ghi chú
 
-Vi du:
-
-```bash
-curl -X POST http://localhost:8000/api/chat/ \
-  -H "Content-Type: application/json" \
-  -d '{"query":"tu van tai nghe sony wh-1000xm5"}'
-```
-
-### User va order
-
-Gateway da khai bao proxy:
-
-- `GET/POST /api/users/`
-- `GET/POST /api/orders/`
-
-Nhung hien tai `user_service` va `order_service` chua co endpoint nghiep vu cu the trong `api/urls.py`, nen cac route nay moi o muc khung.
-
-## Luong du lieu hien tai
-
-- `user_service` ket noi MySQL qua bien moi truong `DB_*`.
-- `product_service` va `order_service` ket noi PostgreSQL qua bien moi truong `POSTGRES_*`.
-- `behavior_service` va `rag_chat_service` dang de SQLite mac dinh cua Django cho muc dich demo/noi bo.
-
-## Seed data
-
-Repo hien tai khong co thu muc `fixtures/`, `seed/` hay file JSON seed mau rieng. Neu ban bo sung seed data sau nay, nen dat trong thu muc ro rang nhu `seed_data/` hoac `fixtures/` de tranh bi xoa nham khi don dep repo.
-
-## Cau truc thu muc
-
-```text
-.
-|-- api_gateway/
-|-- user_service/
-|-- product_service/
-|-- order_service/
-|-- behavior_service/
-|-- rag_chat_service/
-|-- docker-compose.yml
-`-- init-dbs.sql
-```
-
-## Ghi chu
-
-- `behavior_service` dang khai bao them dependency nang nhu TensorFlow va pandas; build container se ton thoi gian hon cac service con lai.
-- `rag_chat_service` uu tien truy van Qdrant qua service `vector_db`; neu chua ket noi duoc thi se fallback sang retrieval in-memory de giu demo van chay.
-- Gateway chi pass-through mot so header co ban va phuc vu muc dich demo/noi bo.
+- **RAG chat**: ưu tiên Neo4j → fallback Qdrant → in-memory nếu Neo4j chưa sẵn sàng
+- **LSTM model**: weights lưu tại `behavior_service/api/assets/lstm_model.json`
+- **Seed data**: chưa có fixture mẫu — tạo sản phẩm qua Admin portal hoặc API
+- **PgAdmin**: email `admin@admin.com` / password `admin`

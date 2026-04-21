@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staff Portal — Ecommerce AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'gateway/portal.css' %}">
+</head>
+<body>
+<nav>
+  <span class="nav-brand">🧑‍💼 Staff Portal</span>
+  <div class="nav-links">
+    <a href="#" class="active" onclick="showSection('orders',this)">Đơn hàng</a>
+    <a href="#" onclick="showSection('payments',this)">Thanh toán</a>
+    <a href="#" onclick="showSection('shipments',this)">Giao vận</a>
+  </div>
+  <div class="nav-user">
+    <strong id="nav-name">...</strong>
+    <button class="logout" onclick="logout()">Đăng xuất</button>
+  </div>
+</nav>
+
+<main>
+  <!-- ORDERS -->
+  <div class="section active" id="sec-orders">
+    <h2>Quản lý đơn hàng</h2>
+    <div class="stats">
+      <div class="stat-card"><div class="stat-label">Tổng đơn</div><div class="stat-value" id="stat-orders">—</div></div>
+      <div class="stat-card"><div class="stat-label">Chờ xử lý</div><div class="stat-value" id="stat-pending">—</div></div>
+      <div class="stat-card"><div class="stat-label">Hoàn thành</div><div class="stat-value" id="stat-done">—</div></div>
+    </div>
+    <div class="card">
+      <table>
+        <thead><tr><th>Mã đơn</th><th>Khách hàng</th><th>Tổng tiền</th><th>Trạng thái</th><th>Thanh toán</th><th>Giao hàng</th></tr></thead>
+        <tbody id="order-tbody"><tr><td colspan="6" class="empty">Đang tải...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PAYMENTS -->
+  <div class="section" id="sec-payments">
+    <h2>Quản lý thanh toán</h2>
+    <div class="card">
+      <table>
+        <thead><tr><th>Mã giao dịch</th><th>Mã đơn</th><th>Khách hàng</th><th>Số tiền</th><th>Phương thức</th><th>Trạng thái</th></tr></thead>
+        <tbody id="payment-tbody"><tr><td colspan="6" class="empty">Đang tải...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SHIPMENTS -->
+  <div class="section" id="sec-shipments">
+    <h2>Quản lý giao vận</h2>
+    <div class="card">
+      <table>
+        <thead><tr><th>Tracking</th><th>Mã đơn</th><th>Carrier</th><th>Điểm đến</th><th>ETA</th><th>Trạng thái</th></tr></thead>
+        <tbody id="shipment-tbody"><tr><td colspan="6" class="empty">Đang tải...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<script>
+const user = JSON.parse(sessionStorage.getItem('user') || 'null');
+if (!user || user.role !== 'staff') window.location.href = '/login/';
+document.getElementById('nav-name').textContent = user?.full_name || '';
+
+function showSection(name, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  document.getElementById('sec-' + name).classList.add('active');
+  el.classList.add('active');
+  if (name === 'payments') loadPayments();
+  if (name === 'shipments') loadShipments();
+}
+function logout() { sessionStorage.clear(); window.location.href = '/login/'; }
+
+function statusBadge(s) {
+  const map = {created:'badge-muted',processing:'badge-warn',completed:'badge-ok',paid:'badge-ok',pending:'badge-warn',failed:'badge-error',delivered:'badge-ok',shipped:'badge-warn'};
+  return `<span class="badge ${map[s]||'badge-muted'}">${s}</span>`;
+}
+
+async function loadOrders() {
+  const data = await fetch('/api/orders/orders/').then(r => r.json());
+  document.getElementById('stat-orders').textContent = data.length;
+  document.getElementById('stat-pending').textContent = data.filter(o => o.status==='created'||o.status==='processing').length;
+  document.getElementById('stat-done').textContent = data.filter(o => o.status==='completed').length;
+  document.getElementById('order-tbody').innerHTML = data.map(o => `<tr>
+    <td><strong>${o.order_number}</strong></td>
+    <td>${o.customer_name}<br><small style="color:var(--muted)">${o.customer_email}</small></td>
+    <td style="color:var(--ok)">${Number(o.total_amount).toLocaleString('vi-VN')}₫</td>
+    <td>${statusBadge(o.status)}</td>
+    <td>${statusBadge(o.payment_status)}</td>
+    <td>${statusBadge(o.shipping_status)}</td>
+  </tr>`).join('');
+}
+
+async function loadPayments() {
+  const data = await fetch('/api/payments/payments/').then(r => r.json());
+  document.getElementById('payment-tbody').innerHTML = data.map(p => `<tr>
+    <td><code style="font-size:12px;color:var(--muted)">${p.transaction_ref}</code></td>
+    <td>${p.order_number}</td>
+    <td>${p.customer_name}</td>
+    <td style="color:var(--ok)">${Number(p.amount).toLocaleString('vi-VN')}₫</td>
+    <td>${p.method}</td>
+    <td>${statusBadge(p.status)}</td>
+  </tr>`).join('');
+}
+
+async function loadShipments() {
+  const data = await fetch('/api/shipments/shipments/').then(r => r.json());
+  document.getElementById('shipment-tbody').innerHTML = data.map(s => `<tr>
+    <td><code style="font-size:12px;color:var(--muted)">${s.tracking_number}</code></td>
+    <td>${s.order_number}</td>
+    <td>${s.carrier}</td>
+    <td>${s.destination}</td>
+    <td>${s.eta_days} ngày</td>
+    <td>${statusBadge(s.shipping_status)}</td>
+  </tr>`).join('');
+}
+
+loadOrders();
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@ from rest_framework.test import APITestCase
 
 
 class BehaviorPredictTests(APITestCase):
-    def test_returns_ranked_recommendations_from_deep_learning_model(self):
+    def test_returns_ranked_recommendations_from_lstm_model(self):
         response = self.client.post(
             "/api/recommend/",
             {
@@ -18,6 +18,7 @@ class BehaviorPredictTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["model_family"], "deep-learning")
+        self.assertEqual(response.data["model_family"], "lstm")
+        self.assertEqual(response.data["model_architecture"], "lstm")
         self.assertEqual(len(response.data["recommendations"]), 3)
         self.assertIn(1, response.data["recommended_product_ids"])

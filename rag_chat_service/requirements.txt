@@ -6,4 +6,5 @@ langchain
 llama-index
 qdrant-client
 openai
+neo4j
 django-cors-headers>=4.3.0

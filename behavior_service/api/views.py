@@ -9,11 +9,13 @@ class BehaviorPredictView(APIView):
         result = predict_products(request.data)
         return Response(
             {
-                "model_family": "deep-learning",
+                "model_family": "lstm",
+                "model_architecture": result["model_type"],
                 "recommended_product_ids": [
                     item["product_id"] for item in result["recommendations"]
                 ],
                 "recommendations": result["recommendations"],
                 "input_features": result["input_features"],
+                "sequence_steps": result["sequence_steps"],
             }
         )

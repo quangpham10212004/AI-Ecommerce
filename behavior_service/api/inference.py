@@ -4,7 +4,7 @@ from functools import lru_cache
 from pathlib import Path
 
 
-MODEL_PATH = Path(__file__).resolve().parent / "assets" / "deep_learning_model.json"
+MODEL_PATH = Path(__file__).resolve().parent / "assets" / "lstm_model.json"
 
 PRODUCT_CATALOG = {
     1: {"name": "Sony WH-1000XM5", "reason": "strong audio and premium-travel preference"},
@@ -27,12 +27,22 @@ CATEGORY_KEYWORDS = {
 }
 
 
-def _dot_product(left, right):
-    return sum(x * y for x, y in zip(left, right))
+def _sigmoid(value):
+    return 1.0 / (1.0 + math.exp(-value))
 
 
-def _relu(values):
-    return [max(0.0, value) for value in values]
+def _vector_matrix_sum(input_vector, hidden_vector, gate_weights):
+    outputs = []
+    for input_weights, recurrent_weights, bias in zip(
+        gate_weights["kernel"],
+        gate_weights["recurrent_kernel"],
+        gate_weights["bias"],
+    ):
+        total = bias
+        total += sum(value * weight for value, weight in zip(input_vector, input_weights))
+        total += sum(value * weight for value, weight in zip(hidden_vector, recurrent_weights))
+        outputs.append(total)
+    return outputs
 
 
 def _softmax(logits):
@@ -49,6 +59,52 @@ def _normalize_text(value):
 def _contains_any(value, keywords):
     normalized_value = _normalize_text(value)
     return any(keyword in normalized_value for keyword in keywords)
+
+
+def _build_feature_sequence(features, model):
+    return [
+        [features[label] for label in timestep_labels]
+        for timestep_labels in model["sequence_labels"]
+    ]
+
+
+def _run_lstm(sequence, model):
+    hidden_state = [0.0] * model["hidden_size"]
+    cell_state = [0.0] * model["hidden_size"]
+
+    for timestep in sequence:
+        forget_gate = [
+            _sigmoid(value)
+            for value in _vector_matrix_sum(timestep, hidden_state, model["forget_gate"])
+        ]
+        input_gate = [
+            _sigmoid(value)
+            for value in _vector_matrix_sum(timestep, hidden_state, model["input_gate"])
+        ]
+        candidate_gate = [
+            math.tanh(value)
+            for value in _vector_matrix_sum(timestep, hidden_state, model["candidate_gate"])
+        ]
+        output_gate = [
+            _sigmoid(value)
+            for value in _vector_matrix_sum(timestep, hidden_state, model["output_gate"])
+        ]
+
+        cell_state = [
+            (forget_value * previous_cell) + (input_value * candidate_value)
+            for forget_value, previous_cell, input_value, candidate_value in zip(
+                forget_gate,
+                cell_state,
+                input_gate,
+                candidate_gate,
+            )
+        ]
+        hidden_state = [
+            output_value * math.tanh(cell_value)
+            for output_value, cell_value in zip(output_gate, cell_state)
+        ]
+
+    return hidden_state
 
 
 @lru_cache(maxsize=1)
@@ -84,16 +140,10 @@ def _build_feature_vector(payload):
 def predict_products(payload, top_k=3):
     model = load_model()
     features = _build_feature_vector(payload)
-    input_vector = [features[label] for label in model["input_labels"]]
-
-    hidden_layer = _relu(
-        [
-            _dot_product(weights, input_vector) + bias
-            for weights, bias in zip(model["hidden_weights"], model["hidden_biases"])
-        ]
-    )
+    sequence = _build_feature_sequence(features, model)
+    hidden_layer = _run_lstm(sequence, model)
     logits = [
-        _dot_product(weights, hidden_layer) + bias
+        sum(weight * hidden_value for weight, hidden_value in zip(weights, hidden_layer)) + bias
         for weights, bias in zip(model["output_weights"], model["output_biases"])
     ]
     probabilities = _softmax(logits)
@@ -117,7 +167,8 @@ def predict_products(payload, top_k=3):
         )
 
     return {
-        "model_type": "two-layer-mlp",
+        "model_type": "lstm",
         "input_features": features,
+        "sequence_steps": sequence,
         "recommendations": recommendations,
     }

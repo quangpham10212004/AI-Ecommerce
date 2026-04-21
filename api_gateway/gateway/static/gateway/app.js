@@ -22,7 +22,17 @@ const endpointMap = {
     products: "/api/products/",
     recommend: "/api/behavior/recommend/",
     chat: "/api/chat/",
-    chatStatus: "/api/chat/status/"
+    chatStatus: "/api/chat/status/",
+    chatGraphStatus: "/api/chat/graph-status/",
+    userSummary: "/api/users/summary/",
+    login: "/api/users/login/",
+    admins: "/api/users/admins/",
+    staff: "/api/users/staff/",
+    customers: "/api/users/customers/",
+    carts: "/api/carts/",
+    payments: "/api/payments/",
+    shipments: "/api/shipments/",
+    orders: "/api/orders/"
 };
 
 const productGrid = document.getElementById("product-grid");
@@ -33,6 +43,33 @@ const behaviorSummary = document.getElementById("behavior-summary");
 const featureList = document.getElementById("feature-list");
 const chatLog = document.getElementById("chat-log");
 const chatFootnote = document.getElementById("chat-footnote");
+const userSummaryCards = document.getElementById("user-summary-cards");
+const adminList = document.getElementById("admin-list");
+const staffList = document.getElementById("staff-list");
+const customerList = document.getElementById("customer-list");
+const cartList = document.getElementById("cart-list");
+const paymentList = document.getElementById("payment-list");
+const shipmentList = document.getElementById("shipment-list");
+const orderList = document.getElementById("order-list");
+const loginResult = document.getElementById("login-result");
+
+const demoCredentials = {
+    admin: {
+        role: "admin",
+        email: "admin@ecommerce.local",
+        password: "123456"
+    },
+    staff: {
+        role: "staff",
+        email: "sales.staff@ecommerce.local",
+        password: "123456"
+    },
+    customer: {
+        role: "customer",
+        email: "minhanh.customer@ecommerce.local",
+        password: "123456"
+    }
+};
 
 const productTranslations = {
     "Tai nghe Sony WH-1000XM5": "Sony WH-1000XM5 Headphones",
@@ -170,7 +207,7 @@ async function loadProducts() {
 
 function addChatMessage(text, role, meta = {}) {
     const item = document.createElement("div");
-    item.className = `chat-message ${role === "user" ? "chat-message-user" : "chat-message-bot"}`;
+    item.className = `msg ${role === "user" ? "msg-user" : "msg-bot"}`;
 
     if (role === "user") {
         item.textContent = text;
@@ -211,6 +248,35 @@ function renderFeatureList(inputFeatures = {}) {
     featureList.innerHTML = activeEntries
         .map(([label, value]) => `<span class="chip chip-muted">${escapeHtml(label)}: ${escapeHtml(Number(value).toFixed(2))}</span>`)
         .join("");
+}
+
+function renderEntityCards(target, items, formatter) {
+    if (!items.length) {
+        target.innerHTML = `<div class="entity-empty">No data available.</div>`;
+        return;
+    }
+
+    target.innerHTML = items.map(formatter).join("");
+}
+
+function summaryCard(label, value) {
+    return `
+        <div class="summary-card">
+            <span>${escapeHtml(label)}</span>
+            <strong>${escapeHtml(value)}</strong>
+        </div>
+    `;
+}
+
+function applyDemoCredentials(role) {
+    const preset = demoCredentials[role];
+    if (!preset) {
+        return;
+    }
+
+    document.getElementById("login-role").value = preset.role;
+    document.getElementById("login-email").value = preset.email;
+    document.getElementById("login-password").value = preset.password;
 }
 
 async function runBehaviorModel(payload) {
@@ -278,10 +344,128 @@ function checkGateway() {
 async function checkChatBackend() {
     try {
         const data = await fetchJson(endpointMap.chatStatus);
-        chatFootnote.textContent = `Knowledge base indexed: ${data.documents_indexed} documents via ${data.backend}.`;
+        const graphStats = await fetchJson(endpointMap.chatGraphStatus).catch(() => null);
+        const graphText = graphStats?.graph_stats
+            ? ` Graph: ${graphStats.graph_stats.documents} docs, ${graphStats.graph_stats.tags} tags, ${graphStats.graph_stats.relationships} relationships.`
+            : "";
+        chatFootnote.textContent = `Knowledge base indexed: ${data.documents_indexed} documents via ${data.backend}.${graphText}`;
         setStatus("chat-status", `Indexed via ${data.backend}`, "ok");
     } catch (error) {
         chatFootnote.textContent = "Knowledge base status is not available yet.";
+    }
+}
+
+async function loadUserDomain() {
+    try {
+        const [summary, admins, staff, customers] = await Promise.all([
+            fetchJson(endpointMap.userSummary),
+            fetchJson(endpointMap.admins),
+            fetchJson(endpointMap.staff),
+            fetchJson(endpointMap.customers)
+        ]);
+
+        userSummaryCards.innerHTML = [
+            summaryCard("Admins", summary.admins),
+            summaryCard("Staff", summary.staff),
+            summaryCard("Customers", summary.customers)
+        ].join("");
+
+        renderEntityCards(adminList, admins, (item) => `
+            <article class="entity-card">
+                <strong>${escapeHtml(item.full_name)}</strong>
+                <span>${escapeHtml(item.permissions_scope)}</span>
+            </article>
+        `);
+        renderEntityCards(staffList, staff, (item) => `
+            <article class="entity-card">
+                <strong>${escapeHtml(item.full_name)}</strong>
+                <span>${escapeHtml(item.department)} | ${escapeHtml(item.shift)}</span>
+            </article>
+        `);
+        renderEntityCards(customerList, customers, (item) => `
+            <article class="entity-card">
+                <strong>${escapeHtml(item.full_name)}</strong>
+                <span>${escapeHtml(item.loyalty_tier)} | ${escapeHtml(item.default_address)}</span>
+            </article>
+        `);
+        setStatus("user-status", "Connected", "ok");
+    } catch (error) {
+        userSummaryCards.innerHTML = `<div class="entity-empty">User service unavailable.</div>`;
+        adminList.innerHTML = "";
+        staffList.innerHTML = "";
+        customerList.innerHTML = "";
+        setStatus("user-status", "Connection error", "error");
+    }
+}
+
+async function loadOperationalServices() {
+    try {
+        const [carts, payments, shipments, orders] = await Promise.all([
+            fetchJson(endpointMap.carts),
+            fetchJson(endpointMap.payments),
+            fetchJson(endpointMap.shipments),
+            fetchJson(endpointMap.orders)
+        ]);
+
+        renderEntityCards(cartList, carts, (item) => `
+            <article class="entity-card">
+                <strong>${escapeHtml(item.customer_name)}</strong>
+                <span>${escapeHtml(item.item_count)} items | ${escapeHtml(formatPrice(item.total_amount))}</span>
+            </article>
+        `);
+        renderEntityCards(paymentList, payments, (item) => `
+            <article class="entity-card">
+                <strong>${escapeHtml(item.transaction_ref)}</strong>
+                <span>${escapeHtml(item.method)} | ${escapeHtml(item.status)}</span>
+            </article>
+        `);
+        renderEntityCards(shipmentList, shipments, (item) => `
+            <article class="entity-card">
+                <strong>${escapeHtml(item.tracking_number)}</strong>
+                <span>${escapeHtml(item.carrier)} | ${escapeHtml(item.shipping_status)}</span>
+            </article>
+        `);
+        renderEntityCards(orderList, orders, (item) => `
+            <article class="entity-card">
+                <strong>${escapeHtml(item.order_number)}</strong>
+                <span>${escapeHtml(item.status)} | ${escapeHtml(formatPrice(item.total_amount))}</span>
+            </article>
+        `);
+
+        setStatus("cart-status", "Connected", "ok");
+        setStatus("payment-status", "Connected", "ok");
+        setStatus("shipping-status", "Connected", "ok");
+    } catch (error) {
+        cartList.innerHTML = `<div class="entity-empty">Cart service unavailable.</div>`;
+        paymentList.innerHTML = `<div class="entity-empty">Payment service unavailable.</div>`;
+        shipmentList.innerHTML = `<div class="entity-empty">Shipping service unavailable.</div>`;
+        orderList.innerHTML = `<div class="entity-empty">Order service unavailable.</div>`;
+        setStatus("cart-status", "Connection error", "error");
+        setStatus("payment-status", "Connection error", "error");
+        setStatus("shipping-status", "Connection error", "error");
+    }
+}
+
+async function loginRole(payload) {
+    try {
+        const data = await fetchJson(endpointMap.login, {
+            method: "POST",
+            body: JSON.stringify(payload)
+        });
+
+        loginResult.innerHTML = `
+            <strong>Login successful</strong><br>
+            Role: ${escapeHtml(data.role)}<br>
+            Name: ${escapeHtml(data.full_name)}<br>
+            Email: ${escapeHtml(data.email)}
+        `;
+        setStatus("user-status", "Authenticated", "ok");
+    } catch (error) {
+        loginResult.innerHTML = `
+            <strong>Login failed</strong><br>
+            Check role, email, or password. Demo password mặc định là <strong>123456</strong>.
+        `;
+        setStatus("user-status", "Auth failed", "error");
     }
 }
 
@@ -303,6 +487,21 @@ document.getElementById("behavior-form").addEventListener("submit", async (event
     await runBehaviorModel(payload);
 });
 
+document.getElementById("login-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    await loginRole({
+        role: document.getElementById("login-role").value,
+        email: document.getElementById("login-email").value.trim(),
+        password: document.getElementById("login-password").value
+    });
+});
+
+document.querySelectorAll(".preset-login").forEach((button) => {
+    button.addEventListener("click", () => {
+        applyDemoCredentials(button.dataset.role);
+    });
+});
+
 document.getElementById("chat-form").addEventListener("submit", async (event) => {
     event.preventDefault();
     const input = document.getElementById("chat-input");
@@ -316,7 +515,7 @@ document.getElementById("chat-form").addEventListener("submit", async (event) =>
 
 document.getElementById("clear-chat").addEventListener("click", () => {
     chatLog.innerHTML = `
-        <div class="chat-message chat-message-bot">
+        <div class="msg msg-bot">
             A new chat session has started. You can continue asking about products, policies, or behavior-based guidance.
         </div>
     `;
@@ -344,3 +543,6 @@ productGrid.addEventListener("click", (event) => {
 checkGateway();
 loadProducts();
 checkChatBackend();
+loadUserDomain();
+loadOperationalServices();
+applyDemoCredentials("customer");

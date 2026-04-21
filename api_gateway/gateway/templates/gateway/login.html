@@ -1,0 +1,81 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đăng nhập — Ecommerce AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6efe4;--surface:#fffaf2;--accent:#b6551f;--accent-dark:#8a3f17;--text:#27170d;--muted:#745641;--line:rgba(100,64,34,.12);--error:#9d3131;--radius:16px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:48px 40px;width:100%;max-width:420px;box-shadow:0 24px 60px rgba(96,55,24,.12)}
+.logo{font-size:13px;font-weight:600;color:var(--accent);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+h1{font-size:26px;font-weight:700;color:var(--text);margin-bottom:32px}
+label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px}
+select,input[type=email],input[type=password]{width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:var(--radius);font-family:inherit;font-size:14px;color:var(--text);background:#fff;margin-bottom:20px;outline:none;transition:border-color .2s}
+select:focus,input:focus{border-color:var(--accent)}
+.btn{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;transition:background .2s}
+.btn:hover{background:var(--accent-dark)}
+.error{color:var(--error);font-size:13px;margin-top:12px;display:none}
+.hint{margin-top:20px;font-size:12px;color:var(--muted);text-align:center}
+.presets{display:flex;gap:8px;margin-bottom:24px}
+.preset{flex:1;padding:8px;border:1px solid var(--line);border-radius:10px;background:#fff;font-family:inherit;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s}
+.preset:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="card">
+  <p class="logo">Ecommerce AI</p>
+  <h1>Đăng nhập</h1>
+  <div class="presets">
+    <button class="preset" onclick="fillPreset('customer','minhanh.customer@ecommerce.local')">👤 Customer</button>
+    <button class="preset" onclick="fillPreset('staff','sales.staff@ecommerce.local')">🧑‍💼 Staff</button>
+    <button class="preset" onclick="fillPreset('admin','admin@ecommerce.local')">🔑 Admin</button>
+  </div>
+  <form id="form">
+    <label>Vai trò</label>
+    <select id="role">
+      <option value="customer">Customer</option>
+      <option value="staff">Staff</option>
+      <option value="admin">Admin</option>
+    </select>
+    <label>Email</label>
+    <input type="email" id="email" placeholder="email@ecommerce.local">
+    <label>Mật khẩu</label>
+    <input type="password" id="password" value="123456">
+    <button class="btn" type="submit">Đăng nhập</button>
+    <p class="error" id="err">Email hoặc mật khẩu không đúng.</p>
+  </form>
+  <p class="hint">Mật khẩu demo mặc định: <strong>123456</strong></p>
+</div>
+<script>
+function fillPreset(role, email) {
+  document.getElementById('role').value = role;
+  document.getElementById('email').value = email;
+  document.getElementById('password').value = '123456';
+}
+document.getElementById('form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const role = document.getElementById('role').value;
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  const err = document.getElementById('err');
+  err.style.display = 'none';
+  try {
+    const res = await fetch('/api/users/login/', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({role, email, password})
+    });
+    if (!res.ok) { err.style.display = 'block'; return; }
+    const data = await res.json();
+    sessionStorage.setItem('user', JSON.stringify(data));
+    const redirect = {customer: '/customer/', staff: '/staff/', admin: '/admin-portal/'};
+    window.location.href = redirect[data.role];
+  } catch { err.style.display = 'block'; }
+});
+</script>
+</body>
+</html>

@@ -34,4 +34,12 @@ class ChatAPITests(APITestCase):
         response = self.client.get("/api/chat/status/")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn(response.data["backend"], {"qdrant", "in_memory"})
+        self.assertIn(response.data["backend"], {"neo4j", "qdrant", "in_memory"})
+
+    def test_graph_status_endpoint_reports_backend_and_optional_stats(self):
+        response = self.client.get("/api/chat/graph-status/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn(response.data["backend"], {"neo4j", "qdrant", "in_memory"})
+        if response.data["backend"] == "neo4j":
+            self.assertIsInstance(response.data["graph_stats"], dict)

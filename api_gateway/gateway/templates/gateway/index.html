@@ -2,190 +2,307 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Customer behavior analytics, knowledge-assisted recommendations, and RAG chat for the e-commerce platform">
-    <title>Customer Behavior Advisor</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'gateway/style.css' %}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ecommerce AI Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'gateway/style.css' %}">
 </head>
 <body>
-    <div class="page-shell">
-        <header class="hero">
-            <div class="hero-copy">
-                <p class="eyebrow">E-commerce AI Console</p>
-                <h1>Analyze customer behavior and guide each shopping journey</h1>
-                <p class="hero-text">
-                    A unified workspace to browse the catalog, run the `model_behavior` service,
-                    explore the knowledge base, and chat with a RAG assistant inside the e-commerce flow.
-                </p>
-                <div class="hero-actions">
-                    <a href="#catalog-section" class="button button-primary">Browse products</a>
-                    <a href="#advisor-section" class="button button-secondary">Open AI Advisor</a>
-                </div>
-            </div>
-            <div class="hero-panel">
-                <div class="metric-card">
-                    <span class="metric-label">Behavior model</span>
-                    <strong>Deep Learning Ready</strong>
-                    <p>Call the prediction service to rank products from recent customer intent signals.</p>
-                </div>
-                <div class="metric-card">
-                    <span class="metric-label">Knowledge Base</span>
-                    <strong>RAG Consultation</strong>
-                    <p>Deliver guidance with retrieved business knowledge and natural conversation.</p>
-                </div>
-            </div>
-        </header>
 
-        <main class="dashboard">
-            <section class="status-strip" id="status-strip">
-                <article class="status-card">
-                    <span>Gateway</span>
-                    <strong id="gateway-status">Checking</strong>
-                </article>
-                <article class="status-card">
-                    <span>Catalog</span>
-                    <strong id="catalog-status">Not loaded</strong>
-                </article>
-                <article class="status-card">
-                    <span>Behavior API</span>
-                    <strong id="behavior-status">Unchecked</strong>
-                </article>
-                <article class="status-card">
-                    <span>RAG Chat</span>
-                    <strong id="chat-status">Unchecked</strong>
-                </article>
-            </section>
+<div class="app">
 
-            <section class="grid-layout">
-                <article class="panel panel-highlight" id="advisor-section">
-                    <div class="panel-head">
-                        <div>
-                            <p class="panel-kicker">AI Advisor</p>
-                            <h2>Analyze customer behavior</h2>
-                        </div>
-                    </div>
-                    <p class="panel-description">
-                        Enter customer intent features and run the deep learning recommendation service. The result links directly to the catalog below.
-                    </p>
-                    <form id="behavior-form" class="behavior-form">
-                        <label>
-                            Preferred category
-                            <select id="preferred-category" name="preferred_category">
-                                <option value="audio">Audio</option>
-                                <option value="accessories">Accessories</option>
-                                <option value="laptop">Laptop</option>
-                                <option value="monitor">Monitor</option>
-                            </select>
-                        </label>
-                        <label>
-                            Search terms
-                            <input type="text" id="search-terms" name="search_terms" placeholder="premium headphones for travel">
-                        </label>
-                        <label>
-                            Recent views
-                            <input type="text" id="recent-views" name="recent_views" placeholder="sony wh-1000xm5, jbl flip 6">
-                        </label>
-                        <label>
-                            Cart value (VND)
-                            <input type="number" id="cart-value" name="cart_value" min="0" step="100000" value="12000000">
-                        </label>
-                        <label>
-                            Premium intent (0-1)
-                            <input type="number" id="premium-intent" name="premium_intent" min="0" max="1" step="0.1" value="0.8">
-                        </label>
-                        <label>
-                            Productivity intent (0-1)
-                            <input type="number" id="productivity-intent" name="productivity_intent" min="0" max="1" step="0.1" value="0.4">
-                        </label>
-                        <label>
-                            Mobility intent (0-1)
-                            <input type="number" id="mobility-intent" name="mobility_intent" min="0" max="1" step="0.1" value="0.6">
-                        </label>
-                        <label>
-                            Support intent (0-1)
-                            <input type="number" id="support-intent" name="support_intent" min="0" max="1" step="0.1" value="0.2">
-                        </label>
-                        <button type="submit" class="button button-primary">Run behavior model</button>
-                    </form>
-                    <div class="insight-box">
-                        <h3>Model output</h3>
-                        <p id="behavior-summary">No prediction yet. Submit a behavior signal to generate recommendations.</p>
-                        <div class="recommendation-chips" id="recommendation-chips"></div>
-                        <div class="feature-list" id="feature-list"></div>
-                    </div>
-                </article>
-
-                <article class="panel">
-                    <div class="panel-head">
-                        <div>
-                            <p class="panel-kicker">Knowledge Base</p>
-                            <h2>Advisory knowledge</h2>
-                        </div>
-                    </div>
-                    <p class="panel-description">
-                        This knowledge layer stores advisory documents, promotion policies, and bundle playbooks that are retrieved before answer generation.
-                    </p>
-                    <div class="kb-list">
-                        <div class="kb-item">
-                            <strong>Promotion policy</strong>
-                            <span>Discount rules, membership benefits, and behavior-driven incentives.</span>
-                        </div>
-                        <div class="kb-item">
-                            <strong>Playbook upsell</strong>
-                            <span>Recommended bundles for keyboards, mice, audio, workstations, and accessories.</span>
-                        </div>
-                        <div class="kb-item">
-                            <strong>Retrieved context</strong>
-                            <span>The assistant retrieves top matching documents, then generates a final answer with source traceability.</span>
-                        </div>
-                    </div>
-                </article>
-            </section>
-
-            <section class="panel catalog-panel" id="catalog-section">
-                <div class="panel-head panel-head-stack">
-                    <div>
-                        <p class="panel-kicker">Product Service</p>
-                        <h2>Integrated e-commerce catalog</h2>
-                    </div>
-                    <div class="catalog-tools">
-                        <input type="search" id="product-search" placeholder="Search by name or category">
-                        <button type="button" class="button button-secondary" id="reload-products">Reload data</button>
-                    </div>
-                </div>
-                <div class="catalog-meta">
-                    <span id="catalog-meta-text">Loading products...</span>
-                </div>
-                <div class="product-grid" id="product-grid"></div>
-            </section>
-        </main>
-
-        <aside class="chat-dock">
-            <div class="chat-shell">
-                <div class="chat-head">
-                    <div>
-                        <p class="panel-kicker">RAG Assistant</p>
-                        <h2>Service advisory chat</h2>
-                    </div>
-                    <button type="button" class="button button-secondary button-small" id="clear-chat">Clear chat</button>
-                </div>
-                <div class="chat-log" id="chat-log">
-                    <div class="chat-message chat-message-bot">
-                        Hello. I can advise using the knowledge base, behavior recommendations, and the current product catalog.
-                    </div>
-                </div>
-                <form id="chat-form" class="chat-form">
-                    <textarea id="chat-input" rows="3" placeholder="Example: Suggest a bundle for a customer building a work-from-home setup"></textarea>
-                    <button type="submit" class="button button-primary">Send RAG query</button>
-                </form>
-                <div class="chat-footnote" id="chat-footnote">RAG status will appear here after the first retrieval.</div>
-            </div>
-        </aside>
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-icon">⚡</span>
+      <span class="brand-name">AI Console</span>
     </div>
-    <script src="{% static 'gateway/app.js' %}"></script>
+    <ul class="sidebar-nav">
+      <li><a href="#section-status" class="nav-item active" data-section="status"><span class="nav-icon">◉</span> Services</a></li>
+      <li><a href="#section-catalog" class="nav-item" data-section="catalog"><span class="nav-icon">◈</span> Catalog</a></li>
+      <li><a href="#section-behavior" class="nav-item" data-section="behavior"><span class="nav-icon">◆</span> LSTM Model</a></li>
+      <li><a href="#section-users" class="nav-item" data-section="users"><span class="nav-icon">◇</span> Users</a></li>
+      <li><a href="#section-ops" class="nav-item" data-section="ops"><span class="nav-icon">▷</span> Operations</a></li>
+    </ul>
+    <div class="sidebar-footer">
+      <span class="version-tag">Microservices Demo</span>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 class="page-title">Ecommerce AI Dashboard</h1>
+        <p class="page-sub">LSTM behavior model · RAG chat · Microservices</p>
+      </div>
+      <div class="topbar-right">
+        <div class="status-pill" id="gateway-pill">
+          <span class="dot"></span> Gateway
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- Service Status -->
+      <section id="section-status" class="section">
+        <h2 class="section-title">Service Health</h2>
+        <div class="status-grid">
+          <div class="status-tile" id="tile-catalog">
+            <div class="tile-icon">🗄</div>
+            <div class="tile-body">
+              <span class="tile-label">Catalog</span>
+              <strong id="catalog-status">Checking…</strong>
+            </div>
+          </div>
+          <div class="status-tile" id="tile-behavior">
+            <div class="tile-icon">🧠</div>
+            <div class="tile-body">
+              <span class="tile-label">LSTM Model</span>
+              <strong id="behavior-status">Unchecked</strong>
+            </div>
+          </div>
+          <div class="status-tile" id="tile-chat">
+            <div class="tile-icon">💬</div>
+            <div class="tile-body">
+              <span class="tile-label">RAG Chat</span>
+              <strong id="chat-status">Unchecked</strong>
+            </div>
+          </div>
+          <div class="status-tile" id="tile-user">
+            <div class="tile-icon">👤</div>
+            <div class="tile-body">
+              <span class="tile-label">User DDD</span>
+              <strong id="user-status">Unchecked</strong>
+            </div>
+          </div>
+          <div class="status-tile" id="tile-cart">
+            <div class="tile-icon">🛒</div>
+            <div class="tile-body">
+              <span class="tile-label">Cart</span>
+              <strong id="cart-status">Unchecked</strong>
+            </div>
+          </div>
+          <div class="status-tile" id="tile-payment">
+            <div class="tile-icon">💳</div>
+            <div class="tile-body">
+              <span class="tile-label">Payment</span>
+              <strong id="payment-status">Unchecked</strong>
+            </div>
+          </div>
+          <div class="status-tile" id="tile-shipping">
+            <div class="tile-icon">📦</div>
+            <div class="tile-body">
+              <span class="tile-label">Shipping</span>
+              <strong id="shipping-status">Unchecked</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Catalog -->
+      <section id="section-catalog" class="section">
+        <div class="section-header">
+          <h2 class="section-title">Product Catalog</h2>
+          <div class="section-actions">
+            <input type="search" id="product-search" class="search-input" placeholder="Search products…">
+            <button type="button" class="btn btn-ghost" id="reload-products">↺ Reload</button>
+          </div>
+        </div>
+        <p class="section-meta" id="catalog-meta-text">Loading…</p>
+        <div class="product-grid" id="product-grid"></div>
+      </section>
+
+      <!-- LSTM Behavior Model -->
+      <section id="section-behavior" class="section">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">LSTM Behavior Model</h2>
+            <p class="section-desc">Feed customer intent signals into the LSTM model to get ranked product recommendations.</p>
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <h3 class="card-title">Input Signals</h3>
+            <form id="behavior-form" class="form-grid">
+              <label class="field">
+                <span>Preferred category</span>
+                <select id="preferred-category" name="preferred_category">
+                  <option value="audio">Audio</option>
+                  <option value="accessories">Accessories</option>
+                  <option value="laptop">Laptop</option>
+                  <option value="monitor">Monitor</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Search terms</span>
+                <input type="text" id="search-terms" placeholder="e.g. premium headphones">
+              </label>
+              <label class="field">
+                <span>Recent views</span>
+                <input type="text" id="recent-views" placeholder="sony wh-1000xm5, jbl flip 6">
+              </label>
+              <label class="field">
+                <span>Cart value (VND)</span>
+                <input type="number" id="cart-value" min="0" step="100000" value="12000000">
+              </label>
+              <label class="field">
+                <span>Premium intent <em>0–1</em></span>
+                <input type="number" id="premium-intent" min="0" max="1" step="0.1" value="0.8">
+              </label>
+              <label class="field">
+                <span>Productivity intent <em>0–1</em></span>
+                <input type="number" id="productivity-intent" min="0" max="1" step="0.1" value="0.4">
+              </label>
+              <label class="field">
+                <span>Mobility intent <em>0–1</em></span>
+                <input type="number" id="mobility-intent" min="0" max="1" step="0.1" value="0.6">
+              </label>
+              <label class="field">
+                <span>Support intent <em>0–1</em></span>
+                <input type="number" id="support-intent" min="0" max="1" step="0.1" value="0.2">
+              </label>
+              <div class="field-full">
+                <button type="submit" class="btn btn-primary btn-full">Run LSTM Model →</button>
+              </div>
+            </form>
+          </div>
+          <div class="card">
+            <h3 class="card-title">Model Output</h3>
+            <p class="output-summary" id="behavior-summary">No prediction yet. Submit signals to generate recommendations.</p>
+            <div class="chip-row" id="recommendation-chips"></div>
+            <div class="chip-row chip-row-sm" id="feature-list"></div>
+            <div class="kb-block">
+              <h4>Knowledge Base</h4>
+              <div class="kb-entry"><strong>Promotion policy</strong><span>Discount rules, membership benefits, behavior-driven incentives.</span></div>
+              <div class="kb-entry"><strong>Upsell playbook</strong><span>Recommended bundles for keyboards, audio, workstations.</span></div>
+              <div class="kb-entry"><strong>Retrieved context</strong><span>Top matching documents retrieved before answer generation.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Users -->
+      <section id="section-users" class="section">
+        <h2 class="section-title">User Domain (DDD)</h2>
+        <div class="domain-summary" id="user-summary-cards"></div>
+
+        <div class="card login-card">
+          <div class="login-top">
+            <h3 class="card-title">Role Login Demo</h3>
+            <div class="preset-row">
+              <button type="button" class="btn btn-ghost btn-sm preset-login" data-role="admin">Admin</button>
+              <button type="button" class="btn btn-ghost btn-sm preset-login" data-role="staff">Staff</button>
+              <button type="button" class="btn btn-ghost btn-sm preset-login" data-role="customer">Customer</button>
+            </div>
+          </div>
+          <form id="login-form" class="form-grid">
+            <label class="field">
+              <span>Role</span>
+              <select id="login-role">
+                <option value="customer">Customer</option>
+                <option value="staff">Staff</option>
+                <option value="admin">Admin</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Email</span>
+              <input type="email" id="login-email" placeholder="user@ecommerce.local">
+            </label>
+            <label class="field">
+              <span>Password</span>
+              <input type="password" id="login-password" value="123456">
+            </label>
+            <div class="field-full">
+              <button type="submit" class="btn btn-primary">Login →</button>
+            </div>
+          </form>
+          <div class="login-result" id="login-result">Default password for all roles: <strong>123456</strong></div>
+        </div>
+
+        <div class="three-col" style="margin-top:24px">
+          <div class="card">
+            <h3 class="card-title">Admins</h3>
+            <div class="entity-list" id="admin-list"></div>
+          </div>
+          <div class="card">
+            <h3 class="card-title">Staff</h3>
+            <div class="entity-list" id="staff-list"></div>
+          </div>
+          <div class="card">
+            <h3 class="card-title">Customers</h3>
+            <div class="entity-list" id="customer-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Operations -->
+      <section id="section-ops" class="section">
+        <h2 class="section-title">Operational Services</h2>
+        <div class="four-col">
+          <div class="card">
+            <h3 class="card-title">🛒 Carts</h3>
+            <div class="entity-list" id="cart-list"></div>
+          </div>
+          <div class="card">
+            <h3 class="card-title">💳 Payments</h3>
+            <div class="entity-list" id="payment-list"></div>
+          </div>
+          <div class="card">
+            <h3 class="card-title">📦 Shipments</h3>
+            <div class="entity-list" id="shipment-list"></div>
+          </div>
+          <div class="card">
+            <h3 class="card-title">📋 Orders</h3>
+            <div class="entity-list" id="order-list"></div>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+
+  <!-- RAG Chat -->
+  <aside class="chat-panel">
+    <div class="chat-header">
+      <div>
+        <p class="chat-kicker">RAG Assistant</p>
+        <h2 class="chat-title">Advisory Chat</h2>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" id="clear-chat">Clear</button>
+    </div>
+    <div class="chat-log" id="chat-log">
+      <div class="msg msg-bot">Hello! I can advise using the knowledge base, LSTM recommendations, and the current product catalog.</div>
+    </div>
+    <form id="chat-form" class="chat-form">
+      <textarea id="chat-input" rows="3" placeholder="e.g. Suggest a bundle for a WFH setup…"></textarea>
+      <button type="submit" class="btn btn-primary btn-full">Send →</button>
+    </form>
+    <p class="chat-footnote" id="chat-footnote">RAG status will appear after first query.</p>
+  </aside>
+
+</div><!-- /app -->
+
+<script src="{% static 'gateway/app.js' %}"></script>
+<script>
+  // Smooth active nav highlight on scroll
+  const sections = document.querySelectorAll('.section');
+  const navItems = document.querySelectorAll('.nav-item');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navItems.forEach(n => n.classList.remove('active'));
+        const match = document.querySelector(`.nav-item[data-section="${e.target.id.replace('section-', '')}"]`);
+        if (match) match.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+  sections.forEach(s => observer.observe(s));
+</script>
 </body>
 </html>

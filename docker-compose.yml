@@ -1,5 +1,14 @@
-version: '3.8'
 services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3001:80"
+    depends_on:
+      - api_gateway
+    networks:
+      - eccom_network
+
   api_gateway:
     build:
       context: ./api_gateway
@@ -9,6 +18,9 @@ services:
     - user_service
     - product_service
     - order_service
+    - cart_service
+    - payment_service
+    - shipping_service
     - behavior_service
     - rag_chat_service
     networks:
@@ -62,6 +74,36 @@ services:
     - postgres_db
     networks:
     - eccom_network
+  cart_service:
+    build:
+      context: ./cart_service
+    ports:
+    - 8106:8000
+    volumes:
+    - ./cart_service:/app
+    - cart_sqlite:/app/db_data
+    networks:
+    - eccom_network
+  payment_service:
+    build:
+      context: ./payment_service
+    ports:
+    - 8107:8000
+    volumes:
+    - ./payment_service:/app
+    - payment_sqlite:/app/db_data
+    networks:
+    - eccom_network
+  shipping_service:
+    build:
+      context: ./shipping_service
+    ports:
+    - 8108:8000
+    volumes:
+    - ./shipping_service:/app
+    - shipping_sqlite:/app/db_data
+    networks:
+    - eccom_network
   behavior_service:
     build:
       context: ./behavior_service
@@ -80,6 +122,11 @@ services:
     - ./rag_chat_service:/app
     depends_on:
     - vector_db
+    - neo4j_db
+    environment:
+    - NEO4J_URI=bolt://neo4j_db:7687
+    - NEO4J_USERNAME=neo4j
+    - NEO4J_PASSWORD=neo4jpassword
     networks:
     - eccom_network
   postgres_db:
@@ -100,6 +147,17 @@ services:
     - 16334:6333
     volumes:
     - qdrant_data:/qdrant/storage
+    networks:
+    - eccom_network
+  neo4j_db:
+    image: neo4j:5
+    environment:
+    - NEO4J_AUTH=neo4j/neo4jpassword
+    ports:
+    - 17474:7474
+    - 17687:7687
+    volumes:
+    - neo4j_data:/data
     networks:
     - eccom_network
   mysql_db:
@@ -127,7 +185,11 @@ services:
 volumes:
   pgdata: null
   qdrant_data: null
+  neo4j_data: null
   mysqldata: null
+  cart_sqlite: null
+  payment_sqlite: null
+  shipping_sqlite: null
 networks:
   eccom_network:
     driver: bridge
