@@ -92,10 +92,76 @@ product_service/   Quản lý sản phẩm, PostgreSQL (port 8102)
 order_service/     Quản lý đơn hàng, PostgreSQL (port 8103)
 behavior_service/  LSTM recommendation model (port 8104)
 rag_chat_service/  RAG chatbot, Neo4j/Qdrant (port 8105)
-cart_service/      Giỏ hàng (port 8106)
-payment_service/   Thanh toán (port 8107)
-shipping_service/  Giao vận (port 8108)
+cart_service/      Giỏ hàng, PostgreSQL (port 8106)
+payment_service/   Thanh toán, PostgreSQL (port 8107)
+shipping_service/  Giao vận, PostgreSQL (port 8108)
 ```
+
+---
+
+## Databases
+
+### Tổng quan
+
+| Service | Database | Loại | Host (trong Docker) | Port (từ máy host) |
+|---------|----------|------|--------------------|--------------------|
+| user_service | `user_db` | MySQL 8 | `mysql_db:3306` | `localhost:13307` |
+| product_service | `product_db` | PostgreSQL 15 | `postgres_db:5432` | `localhost:15433` |
+| order_service | `order_db` | PostgreSQL 15 | `postgres_db:5432` | `localhost:15433` |
+| cart_service | `cart_db` | PostgreSQL 15 | `postgres_db:5432` | `localhost:15433` |
+| payment_service | `payment_db` | PostgreSQL 15 | `postgres_db:5432` | `localhost:15433` |
+| shipping_service | `shipping_db` | PostgreSQL 15 | `postgres_db:5432` | `localhost:15433` |
+
+---
+
+### Kết nối MySQL Workbench (`user_db`)
+
+1. Mở MySQL Workbench → click **+** để tạo connection mới
+2. Điền thông tin:
+
+| Field | Giá trị |
+|-------|---------|
+| Connection Name | `ecommerce_mysql` (tùy đặt) |
+| Hostname | `127.0.0.1` |
+| Port | `13307` |
+| Username | `root` |
+| Password | `rootpassword` |
+
+3. Click **Test Connection** → OK → **Connect**
+4. Chọn schema `user_db` ở panel bên trái
+5. Các bảng chính: `api_adminuser`, `api_staffuser`, `api_customer`
+
+---
+
+### Kết nối PgAdmin (`product_db`, `order_db`, `cart_db`, `payment_db`, `shipping_db`)
+
+1. Vào http://localhost:15050 → login `admin@admin.com` / `admin`
+2. Click chuột phải vào **Servers** → **Register** → **Server**
+3. Tab **General**: đặt tên `ecommerce_postgres`
+4. Tab **Connection**:
+
+| Field | Giá trị |
+|-------|---------|
+| Host | `127.0.0.1` |
+| Port | `15433` |
+| Database | `postgres` |
+| Username | `postgres` |
+| Password | `postgres` |
+
+5. Click **Save**
+6. Expand **Servers → ecommerce_postgres → Databases** → thấy toàn bộ 5 databases
+
+**Xem dữ liệu nhanh:** click vào database → **Tools** → **Query Tool** → chạy SQL:
+
+```sql
+-- Ví dụ xem đơn hàng
+SELECT * FROM api_order;
+
+-- Ví dụ xem sản phẩm (trong product_db)
+SELECT * FROM api_product;
+```
+
+Hoặc: expand **Schemas → public → Tables** → chuột phải vào bảng → **View/Edit Data → All Rows**
 
 ---
 
@@ -117,7 +183,7 @@ POST http://localhost:8000/api/products/
 
 # LSTM behavior recommendation
 POST http://localhost:8000/api/behavior/recommend/
-{"user_id": 1, "recent_views": [1, 2, 3]}
+{"recent_actions": ["view", "click", "add_to_cart", "view", "wishlist"]}
 
 # RAG chat
 POST http://localhost:8000/api/chat/
@@ -133,6 +199,7 @@ POST http://localhost:8000/api/users/login/
 ## Ghi chú
 
 - **RAG chat**: ưu tiên Neo4j → fallback Qdrant → in-memory nếu Neo4j chưa sẵn sàng
-- **LSTM model**: weights lưu tại `behavior_service/api/assets/lstm_model.json`
+- **LSTM model**: weights lưu tại `behavior_service/api/assets/model_lstm.h5`
 - **Seed data**: chưa có fixture mẫu — tạo sản phẩm qua Admin portal hoặc API
 - **PgAdmin**: email `admin@admin.com` / password `admin`
+- **Neo4j Browser**: http://localhost:17474 — login `neo4j` / `neo4jpassword`

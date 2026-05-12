@@ -81,7 +81,13 @@ services:
     - 8106:8000
     volumes:
     - ./cart_service:/app
-    - cart_sqlite:/app/db_data
+    environment:
+    - POSTGRES_DB=cart_db
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=postgres
+    - POSTGRES_HOST=postgres_db
+    depends_on:
+    - postgres_db
     networks:
     - eccom_network
   payment_service:
@@ -91,7 +97,13 @@ services:
     - 8107:8000
     volumes:
     - ./payment_service:/app
-    - payment_sqlite:/app/db_data
+    environment:
+    - POSTGRES_DB=payment_db
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=postgres
+    - POSTGRES_HOST=postgres_db
+    depends_on:
+    - postgres_db
     networks:
     - eccom_network
   shipping_service:
@@ -101,7 +113,13 @@ services:
     - 8108:8000
     volumes:
     - ./shipping_service:/app
-    - shipping_sqlite:/app/db_data
+    environment:
+    - POSTGRES_DB=shipping_db
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=postgres
+    - POSTGRES_HOST=postgres_db
+    depends_on:
+    - postgres_db
     networks:
     - eccom_network
   behavior_service:
@@ -187,9 +205,6 @@ volumes:
   qdrant_data: null
   neo4j_data: null
   mysqldata: null
-  cart_sqlite: null
-  payment_sqlite: null
-  shipping_sqlite: null
 networks:
   eccom_network:
     driver: bridge
