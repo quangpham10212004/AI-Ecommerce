@@ -9,9 +9,11 @@ import CheckoutPage from '@/app/customer/checkout/page'
 import OrdersPage from '@/app/customer/orders/page'
 import StaffDashboard from '@/app/staff/dashboard/page'
 import StaffOrders from '@/app/staff/orders/page'
+import StaffProducts from '@/app/staff/products/page'
 import AdminDashboard from '@/app/admin/dashboard/page'
 import AdminProducts from '@/app/admin/products/page'
 import AdminUsers from '@/app/admin/users/page'
+import AdminAnalytics from '@/app/admin/analytics/page'
 import ProductDetailPage from '@/app/customer/product/[id]/page'
 
 const router = createBrowserRouter([
@@ -40,6 +42,7 @@ const router = createBrowserRouter([
       children: [
         { path: '/staff/dashboard', element: <StaffDashboard /> },
         { path: '/staff/orders', element: <StaffOrders /> },
+        { path: '/staff/products', element: <StaffProducts /> },
       ],
     }],
   },
@@ -52,6 +55,7 @@ const router = createBrowserRouter([
         { path: '/admin/dashboard', element: <AdminDashboard /> },
         { path: '/admin/products', element: <AdminProducts /> },
         { path: '/admin/users', element: <AdminUsers /> },
+        { path: '/admin/analytics', element: <AdminAnalytics /> },
       ],
     }],
   },
