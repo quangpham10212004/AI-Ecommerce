@@ -24,7 +24,7 @@ function MessageBubble({ m }: { m: ChatMessage }) {
       <div className={`flex items-end gap-2 max-w-[88%] ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
         {m.role === 'bot' && (
           <div className="w-7 h-7 rounded-xl shrink-0 flex items-center justify-center mb-0.5"
-            style={{ background: 'linear-gradient(135deg,#7c3aed,#4f46e5)' }}>
+            style={{ background: 'linear-gradient(135deg,#00668a,#38bdf8)' }}>
             <Sparkles size={12} className="text-white" />
           </div>
         )}
@@ -33,7 +33,7 @@ function MessageBubble({ m }: { m: ChatMessage }) {
             ? 'text-white rounded-br-sm'
             : 'bg-surface2 border border-white/[0.07] text-gray-200 rounded-bl-sm'
         }`}
-          style={m.role === 'user' ? { background: 'linear-gradient(135deg,#7c3aed,#4f46e5)' } : {}}>
+          style={m.role === 'user' ? { background: 'linear-gradient(135deg,#00668a,#38bdf8)' } : {}}>
           {m.text}
         </div>
       </div>
@@ -109,8 +109,8 @@ export default function AIChatPanel() {
       {/* Trigger button */}
       {!open && (
         <button onClick={toggle}
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-glow-purple transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(124,58,237,0.6)]"
-          style={{ background: 'linear-gradient(135deg,#7c3aed,#4f46e5)' }}>
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-glow-purple transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(56,189,248,0.6)]"
+          style={{ background: 'linear-gradient(135deg,#00668a,#38bdf8)' }}>
           <Bot size={18} className="text-white" />
           <span className="text-sm font-bold text-white">AI Tư vấn</span>
           <span className="w-2 h-2 bg-success rounded-full animate-pulse" />
@@ -122,14 +122,14 @@ export default function AIChatPanel() {
 
       {/* Panel — slides in from right */}
       <div className={`fixed top-0 right-0 z-50 h-full w-full max-w-[440px] flex flex-col transition-transform duration-300 ease-out ${open ? 'translate-x-0' : 'translate-x-full'}`}
-        style={{ background: 'rgba(7,8,15,0.98)', backdropFilter: 'blur(24px)', borderLeft: '1px solid rgba(255,255,255,0.07)' }}>
+        style={{ background: 'rgba(11,28,48,0.98)', backdropFilter: 'blur(24px)', borderLeft: '1px solid rgba(255,255,255,0.07)' }}>
 
         {/* ── Header ── */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.07] shrink-0"
-          style={{ background: 'linear-gradient(135deg,rgba(124,58,237,0.12) 0%,rgba(79,70,229,0.06) 100%)' }}>
+          style={{ background: 'linear-gradient(135deg,rgba(0,102,138,0.12) 0%,rgba(56,189,248,0.06) 100%)' }}>
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-glow-purple"
-              style={{ background: 'linear-gradient(135deg,#7c3aed,#4f46e5)' }}>
+              style={{ background: 'linear-gradient(135deg,#00668a,#38bdf8)' }}>
               <Sparkles size={16} className="text-white" />
             </div>
             <div>
@@ -175,7 +175,7 @@ export default function AIChatPanel() {
           {loading && (
             <div className="flex items-end gap-2">
               <div className="w-7 h-7 rounded-xl shrink-0 flex items-center justify-center"
-                style={{ background: 'linear-gradient(135deg,#7c3aed,#4f46e5)' }}>
+                style={{ background: 'linear-gradient(135deg,#00668a,#38bdf8)' }}>
                 <Sparkles size={12} className="text-white" />
               </div>
               <div className="bg-surface2 border border-white/[0.07] rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-2">
@@ -193,7 +193,7 @@ export default function AIChatPanel() {
 
         {/* ── Input ── */}
         <div className="px-4 pb-5 pt-3 border-t border-white/[0.07] shrink-0">
-          <div className="flex gap-2 items-end bg-surface2 border border-white/[0.08] rounded-2xl px-4 py-3 focus-within:border-accent/40 focus-within:shadow-[0_0_0_3px_rgba(124,58,237,0.1)] transition-all">
+          <div className="flex gap-2 items-end bg-surface2 border border-white/[0.08] rounded-2xl px-4 py-3 focus-within:border-accent/40 focus-within:shadow-[0_0_0_3px_rgba(56,189,248,0.1)] transition-all">
             <textarea
               ref={inputRef}
               value={input}
@@ -201,12 +201,12 @@ export default function AIChatPanel() {
               onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
               placeholder="Hỏi về sản phẩm, bundle, chính sách..."
               rows={1}
-              className="flex-1 bg-transparent text-sm text-gray-100 placeholder:text-gray-600 outline-none resize-none leading-relaxed"
+              className="flex-1 bg-transparent text-sm text-gray-100 placeholder:text-gray-650 outline-none resize-none leading-relaxed"
               style={{ maxHeight: 120 }}
             />
             <button onClick={() => send()} disabled={!input.trim() || loading}
               className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all disabled:opacity-30"
-              style={{ background: input.trim() ? 'linear-gradient(135deg,#7c3aed,#4f46e5)' : 'rgba(255,255,255,0.05)' }}>
+              style={{ background: input.trim() ? 'linear-gradient(135deg,#00668a,#38bdf8)' : 'rgba(255,255,255,0.05)' }}>
               {loading ? <Loader2 size={13} className="text-white animate-spin" /> : <Send size={13} className="text-white" />}
             </button>
           </div>

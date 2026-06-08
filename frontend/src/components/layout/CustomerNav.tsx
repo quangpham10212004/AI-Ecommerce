@@ -1,14 +1,16 @@
-import { ShoppingCart, LogOut, Bot, Search, Bell, Home, Package } from 'lucide-react'
+import { ShoppingCart, LogOut, Bot, Home, Package, Sun, Moon } from 'lucide-react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
 import { useCartStore } from '@/stores/cartStore'
 import { useChatStore } from '@/stores/chatStore'
+import { useThemeStore } from '@/stores/themeStore'
 import { Sparkles } from 'lucide-react'
 
 export default function CustomerNav() {
   const { user, logout } = useAuthStore()
   const count = useCartStore((s) => s.count())
   const toggleChat = useChatStore((s) => s.toggle)
+  const { theme, toggle: toggleTheme } = useThemeStore()
   const navigate = useNavigate()
 
   const handleLogout = () => { logout(); navigate('/login') }
@@ -27,14 +29,14 @@ export default function CustomerNav() {
     <nav
       className="sticky top-0 z-50 px-6 h-16 flex items-center justify-between border-b border-white/[0.06]"
       style={{
-        background: 'rgba(7,8,15,0.85)',
+        background: 'rgba(11,28,48,0.85)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
       }}
     >
       {/* Logo */}
       <Link to="/customer/home" className="flex items-center gap-2.5 group">
-        <div className="w-8 h-8 rounded-xl bg-accent-gradient flex items-center justify-center shadow-glow-purple group-hover:shadow-[0_0_20px_rgba(124,58,237,0.5)] transition-all duration-300">
+        <div className="w-8 h-8 rounded-xl bg-accent-gradient flex items-center justify-center shadow-glow-purple group-hover:shadow-[0_0_20px_rgba(56,189,248,0.5)] transition-all duration-300">
           <Sparkles size={15} className="text-white" />
         </div>
         <span className="font-display font-bold text-white text-sm hidden sm:block">Ecommerce <span className="gradient-text-sm">AI</span></span>
@@ -65,6 +67,15 @@ export default function CustomerNav() {
           <Bot size={16} />
         </button>
 
+        {/* Theme toggle */}
+        <button
+          onClick={toggleTheme}
+          title={theme === 'dark' ? 'Chuyển Light mode' : 'Chuyển Dark mode'}
+          className="w-9 h-9 rounded-xl flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/[0.05] border border-transparent hover:border-white/10 transition-all duration-200"
+        >
+          {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+        </button>
+
         {/* Cart */}
         <Link
           to="/customer/cart"
@@ -85,7 +96,7 @@ export default function CustomerNav() {
         {/* User */}
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold text-white"
-            style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)' }}>
+            style={{ background: 'linear-gradient(135deg, #00668a, #38bdf8)' }}>
             {initials}
           </div>
           <span className="hidden sm:block text-sm text-gray-300 font-medium max-w-[100px] truncate">{user?.full_name}</span>

@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, ShoppingBag, Package, Users, BarChart2, LogOut, Sparkles, ChevronRight } from 'lucide-react'
+import { LayoutDashboard, ShoppingBag, Package, Users, BarChart2, LogOut, Sparkles, ChevronRight, Sun, Moon } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
+import { useThemeStore } from '@/stores/themeStore'
 import { cn } from '@/lib/cn'
 
 interface NavItem { to: string; label: string; icon: React.ReactNode }
@@ -21,18 +22,19 @@ const staffLinks: NavItem[] = [
 export default function Sidebar({ role }: { role: 'admin' | 'staff' }) {
   const { user, logout } = useAuthStore()
   const navigate = useNavigate()
+  const { theme, toggle: toggleTheme } = useThemeStore()
   const links = role === 'admin' ? adminLinks : staffLinks
 
   const initials = user?.full_name?.split(' ').slice(-2).map((w: string) => w[0]).join('').toUpperCase() ?? 'U'
 
   const roleLabel = role === 'admin' ? 'Admin Portal' : 'Staff Portal'
   const roleBadgeColor = role === 'admin'
-    ? 'from-fuchsia-500/20 to-pink-500/20 border-fuchsia-500/30 text-fuchsia-300'
-    : 'from-indigo-500/20 to-blue-500/20 border-indigo-500/30 text-indigo-300'
+    ? 'from-accent/20 to-accentLight/20 border-accent/30 text-accentLight'
+    : 'from-accentLight/20 to-cyan-500/20 border-cyan-500/30 text-cyan-300'
 
   return (
     <aside className="w-60 shrink-0 flex flex-col h-screen sticky top-0 border-r border-white/[0.06]"
-      style={{ background: 'rgba(7,8,15,0.9)', backdropFilter: 'blur(20px)' }}>
+      style={{ background: 'rgba(11,28,48,0.9)', backdropFilter: 'blur(20px)' }}>
 
       {/* Brand */}
       <div className="px-5 py-5 border-b border-white/[0.06]">
@@ -52,7 +54,7 @@ export default function Sidebar({ role }: { role: 'admin' | 'staff' }) {
       {/* User info */}
       <div className="px-4 py-3 mx-3 mt-3 rounded-xl bg-surface3 border border-white/[0.06] flex items-center gap-3">
         <div className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white shrink-0"
-          style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)' }}>
+          style={{ background: 'linear-gradient(135deg, #00668a, #38bdf8)' }}>
           {initials}
         </div>
         <div className="min-w-0">
@@ -84,6 +86,13 @@ export default function Sidebar({ role }: { role: 'admin' | 'staff' }) {
 
       {/* Logout */}
       <div className="p-3 border-t border-white/[0.06]">
+        <button
+          onClick={toggleTheme}
+          className="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl text-sm text-gray-500 hover:text-white hover:bg-white/[0.04] border border-transparent hover:border-white/10 transition-all duration-200 mb-1"
+        >
+          {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+          {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+        </button>
         <button
           id="sidebar-logout"
           onClick={() => { logout(); navigate('/login') }}

@@ -202,7 +202,7 @@ export default function AdminAnalytics() {
                       {/* Revenue Fill */}
                       <div 
                         className={`w-full rounded-t-lg transition-all duration-1000 ${
-                          item.active ? 'bg-accent-gradient shadow-glow-purple' : 'bg-indigo-500/40 group-hover:bg-indigo-500/60'
+                          item.active ? 'bg-accent-gradient shadow-glow-purple' : 'bg-accent/40 group-hover:bg-accent/60'
                         }`}
                         style={{ height: `${item.rev}%` }}
                       />
@@ -318,13 +318,13 @@ export default function AdminAnalytics() {
           <div className="card flex flex-col justify-between">
             <div>
               <h3 className="font-bold text-base text-white mb-4 flex items-center gap-2">
-                <Sparkles size={15} className="text-purple-400" /> Chỉ số AI Match & Đề xuất
+                <Sparkles size={15} className="text-accentLight" /> Chỉ số AI Match & Đề xuất
               </h3>
               
               <div className="flex flex-col gap-5 pt-3">
                 <div className="text-center p-4 bg-surface3 rounded-2xl border border-white/[0.04]">
                   <p className="text-xs text-gray-500 uppercase font-semibold tracking-wider">Độ trùng khớp AI trung bình</p>
-                  <p className="text-4xl font-extrabold font-display text-purple-400 mt-1">{avgAiMatch.toFixed(1)}%</p>
+                  <p className="text-4xl font-extrabold font-display text-accentLight mt-1">{avgAiMatch.toFixed(1)}%</p>
                   <p className="text-[10px] text-gray-500 mt-1.5">Tính trên tất cả sản phẩm được lập chỉ mục AI</p>
                 </div>
 
@@ -338,7 +338,7 @@ export default function AdminAnalytics() {
                     </div>
                     <div className="h-1.5 bg-surface3 rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-purple-500 rounded-full" 
+                        className="h-full bg-accentLight rounded-full" 
                         style={{ width: `${(products.filter(p => (p.ai_match || 0) >= 80).length / Math.max(products.length, 1)) * 100}%` }} 
                       />
                     </div>
@@ -362,7 +362,7 @@ export default function AdminAnalytics() {
               </div>
             </div>
 
-            <div className="bg-purple-500/10 border border-purple-500/20 rounded-xl p-3 text-xs text-purple-200 mt-4 leading-relaxed">
+            <div className="bg-accent/10 border border-accentLight/20 rounded-xl p-3 text-xs text-accentLight mt-4 leading-relaxed">
               💡 <strong>Gợi ý từ AI Assistant:</strong> Có {products.filter(p => !p.ai_match).length} sản phẩm chưa được tạo chỉ mục AI Match. Nên chạy quy trình gán nhãn AI để tăng tỷ lệ chuyển đổi.
             </div>
           </div>

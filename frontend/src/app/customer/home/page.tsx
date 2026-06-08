@@ -34,7 +34,7 @@ export default function CustomerHome() {
             background: 'linear-gradient(135deg, rgba(124,58,237,0.15) 0%, rgba(79,70,229,0.08) 40%, transparent 70%)',
           }}
         />
-        <div className="glow-orb w-80 h-80 bg-violet-600 opacity-10 -top-20 -right-10" />
+        <div className="glow-orb w-80 h-80 bg-accentLight/20 opacity-10 -top-20 -right-10" />
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{
@@ -124,7 +124,7 @@ export default function CustomerHome() {
       <section className="mx-6">
         <div className="relative overflow-hidden rounded-2xl border border-accent/20 px-8 py-10"
           style={{ background: 'linear-gradient(135deg, rgba(124,58,237,0.15) 0%, rgba(79,70,229,0.1) 50%, rgba(14,165,233,0.08) 100%)' }}>
-          <div className="glow-orb w-64 h-64 bg-violet-600 opacity-20 -right-10 -top-10" />
+          <div className="glow-orb w-64 h-64 bg-accent/20 opacity-20 -right-10 -top-10" />
           <div className="relative z-10 max-w-md">
             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 text-xs font-semibold text-accentLight mb-3">
               <Sparkles size={10} /> Powered by AI

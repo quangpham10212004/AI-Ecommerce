@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aura Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&amp;family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            background-color: #f8f9ff;
+            color: #0b1c30;
+            -webkit-font-smoothing: antialiased;
+        }
+        .glass-card {
+            background: #ffffff;
+            border: 1px solid #e5eeff;
+            box-shadow: 0 4px 20px rgba(0, 102, 138, 0.05);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            border: 1px solid #38bdf8;
+            box-shadow: 0 8px 30px rgba(0, 102, 138, 0.1);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #00668a 0%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Chart Drawing Animations */
+        .sparkline-svg {
+            stroke-dasharray: 400;
+            stroke-dashoffset: 400;
+            animation: dash 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        .main-chart-path {
+            stroke-dasharray: 2000;
+            stroke-dashoffset: 2000;
+            animation: dash 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        .main-chart-area {
+            opacity: 0;
+            animation: fadeIn 1s ease-out 1.5s forwards;
+        }
+        @keyframes dash {
+            to { stroke-dashoffset: 0; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Sidebar Interaction */
+        .nav-link {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .nav-link:hover {
+            transform: translateX(8px);
+            background: rgba(0, 102, 138, 0.05);
+        }
+
+        /* Activity Staggered Entrance */
+        .activity-item {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: slideUpFade 0.5s ease-out forwards;
+        }
+        @keyframes slideUpFade {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .glow-button {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 102, 138, 0.2);
+        }
+        .glow-button:hover {
+            box-shadow: 0 8px 25px rgba(0, 102, 138, 0.3);
+            transform: translateY(-1px);
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #dce9ff; border-radius: 10px; }
+    </style>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "tertiary-fixed": "#dbe4ea",
+                "on-primary-container": "#004965",
+                "secondary-fixed-dim": "#bec6e0",
+                "surface-dim": "#cbdbf5",
+                "surface-container-low": "#eff4ff",
+                "on-secondary-fixed": "#131b2e",
+                "on-tertiary-container": "#3c454a",
+                "surface-container-highest": "#d3e4fe",
+                "error": "#ba1a1a",
+                "on-surface-variant": "#3e484f",
+                "on-primary-fixed": "#001e2c",
+                "tertiary-fixed-dim": "#bfc8ce",
+                "on-background": "#0b1c30",
+                "secondary-fixed": "#dae2fd",
+                "surface-bright": "#f8f9ff",
+                "surface-container-high": "#dce9ff",
+                "on-tertiary-fixed": "#141d21",
+                "secondary": "#565e74",
+                "background": "#f8f9ff",
+                "on-secondary-fixed-variant": "#3f465c",
+                "primary-fixed-dim": "#7bd0ff",
+                "primary-fixed": "#c4e7ff",
+                "on-error-container": "#93000a",
+                "on-tertiary-fixed-variant": "#3f484d",
+                "primary-container": "#38bdf8",
+                "inverse-on-surface": "#eaf1ff",
+                "outline-variant": "#bdc8d1",
+                "tertiary-container": "#aab3b8",
+                "on-tertiary": "#ffffff",
+                "primary": "#00668a",
+                "inverse-primary": "#7bd0ff",
+                "outline": "#6e7980",
+                "secondary-container": "#dae2fd",
+                "on-primary": "#ffffff",
+                "surface-container-lowest": "#ffffff",
+                "surface-tint": "#00668a",
+                "error-container": "#ffdad6",
+                "on-primary-fixed-variant": "#004c69",
+                "surface": "#f8f9ff",
+                "on-secondary": "#ffffff",
+                "inverse-surface": "#213145",
+                "on-secondary-container": "#5c647a",
+                "surface-variant": "#d3e4fe",
+                "surface-container": "#e5eeff",
+                "on-error": "#ffffff",
+                "tertiary": "#576065",
+                "on-surface": "#0b1c30"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "gutter": "24px",
+                "xs": "4px",
+                "margin-desktop": "48px",
+                "md": "16px",
+                "sm": "8px",
+                "base": "4px",
+                "margin-mobile": "16px",
+                "lg": "24px",
+                "xl": "32px",
+                "stack-sm": "8px",
+                "stack-lg": "32px",
+                "stack-md": "16px"
+        },
+        "fontFamily": {
+                "headline-lg": ["Outfit"],
+                "display-lg": ["Outfit"],
+                "headline-md": ["Outfit"],
+                "headline-lg-mobile": ["Outfit"],
+                "body-md": ["Outfit"],
+                "label-md": ["Outfit"],
+                "body-lg": ["Outfit"],
+                "label-sm": ["Outfit"]
+        },
+        "fontSize": {
+                "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+                "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }]
+        }
+},
+    },
+  }
+</script>
+</head>
+<body class="flex min-h-screen bg-background text-on-background">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-screen flex flex-col p-stack-md z-40 bg-surface-container-lowest border-r border-outline-variant/30 w-64">
+<div class="mb-stack-lg flex items-center gap-3 px-2">
+<div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined text-white font-bold">blur_on</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-black text-primary">Aura Admin</h1>
+<p class="font-label-md text-label-md text-on-surface-variant">System Controller</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="nav-link flex items-center gap-3 px-3 py-3 text-primary bg-primary-container/20 rounded-xl font-bold translate-x-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="nav-link flex items-center gap-3 px-3 py-3 text-on-surface-variant hover:text-on-surface rounded-xl" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-md text-label-md">Inventory</span>
+</a>
+<a class="nav-link flex items-center gap-3 px-3 py-3 text-on-surface-variant hover:text-on-surface rounded-xl" href="#">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span class="font-label-md text-label-md">Orders</span>
+</a>
+<a class="nav-link flex items-center gap-3 px-3 py-3 text-on-surface-variant hover:text-on-surface rounded-xl" href="#">
+<span class="material-symbols-outlined">leaderboard</span>
+<span class="font-label-md text-label-md">Analytics</span>
+</a>
+<a class="nav-link flex items-center gap-3 px-3 py-3 text-on-surface-variant hover:text-on-surface rounded-xl" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-md text-label-md">Users</span>
+</a>
+<a class="nav-link flex items-center gap-3 px-3 py-3 text-on-surface-variant hover:text-on-surface rounded-xl" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto space-y-4">
+<button class="w-full py-3 px-4 bg-primary text-on-primary font-label-md text-label-md font-bold rounded-xl glow-button">
+                Generate Report
+            </button>
+<div class="pt-4 border-t border-outline-variant/20">
+<a class="nav-link flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface" href="#">
+<span class="material-symbols-outlined">contrast</span>
+<span class="font-label-md text-label-md">Appearance</span>
+</a>
+<a class="nav-link flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-error" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md text-label-md">Sign Out</span>
+</a>
+</div>
+<div class="flex items-center gap-3 px-2 pt-2">
+<img alt="Staff Profile Picture" class="w-10 h-10 rounded-full border border-primary/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1C1ycm-uCCuTRXTsApgT8Mm3hHLeL1-Kq-ILn9c0_coc8472y9cin5Og7Iq4XfeIEVgG3rlQkVpsp6YOY-flH4eUiUj_mOToqGXPrUGaHP3q_YRZyQkY3BcgTG61WZauIkFq5ijVGI7WEOcJNI8W-1nWPtXFyi0NP2tRVRuyg89qH_d8GYRaliheyvD9xCrQKwi-1Ntk_keCxaaJf8Grf_i3OPG7gnQc5pSnmJ729VnhTWfel1JjS-bSKAxYZiyHR6zVz294TGitw"/>
+<div>
+<p class="font-label-md text-label-md font-bold text-on-surface">Alex Chen</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest">Admin ID: 8821</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 p-8 md:p-12 overflow-y-auto">
+<header class="flex justify-between items-end mb-12">
+<div>
+<h2 class="font-headline-lg text-headline-lg font-bold text-on-surface">Operations Hub</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Welcome back, Alex. Here is your system health and sales performance.</p>
+</div>
+<div class="flex gap-4">
+<div class="px-4 py-2 bg-surface-container rounded-lg border border-outline-variant/20 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">calendar_today</span>
+<span class="font-label-md text-label-md text-on-surface">Oct 24, 2023 - Oct 31, 2023</span>
+</div>
+<button class="p-2 bg-surface-container rounded-lg border border-outline-variant/20 hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+</div>
+</header>
+<!-- Stats Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+<!-- Total Revenue -->
+<div class="glass-card p-6 rounded-2xl flex flex-col justify-between group">
+<div>
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-secondary-container text-on-secondary-container rounded-lg">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<span class="text-tertiary font-label-sm text-label-sm flex items-center gap-1 font-bold">
+<span class="material-symbols-outlined text-xs">trending_up</span> +12.5%
+                        </span>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Total Revenue</p>
+<h3 class="font-headline-md text-headline-md font-bold count-up text-on-surface" data-prefix="$" data-target="1284032">$0</h3>
+</div>
+<div class="mt-4 h-12 w-full">
+<svg class="w-full h-full" viewbox="0 0 100 40">
+<path class="sparkline-svg" d="M0 35 Q 20 10, 40 25 T 80 5 T 100 20" fill="none" stroke="#00668a" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<!-- Active Users -->
+<div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-primary-container/20 rounded-lg text-primary">
+<span class="material-symbols-outlined">person_celebrate</span>
+</div>
+<span class="text-tertiary font-label-sm text-label-sm flex items-center gap-1 font-bold">
+<span class="material-symbols-outlined text-xs">trending_up</span> +4.2%
+                        </span>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Active Users</p>
+<h3 class="font-headline-md text-headline-md font-bold count-up text-on-surface" data-target="42903">0</h3>
+</div>
+<div class="mt-4 h-12 w-full">
+<svg class="w-full h-full" viewbox="0 0 100 40">
+<path class="sparkline-svg" d="M0 25 Q 15 35, 30 15 T 60 25 T 100 5" fill="none" stroke="#38bdf8" stroke-width="2" style="animation-delay: 0.2s"></path>
+</svg>
+</div>
+</div>
+<!-- Pending Orders -->
+<div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-tertiary-container/20 rounded-lg text-tertiary">
+<span class="material-symbols-outlined">pending_actions</span>
+</div>
+<span class="text-error font-label-sm text-label-sm flex items-center gap-1 font-bold">
+<span class="material-symbols-outlined text-xs">trending_down</span> -2.1%
+                        </span>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Pending Orders</p>
+<h3 class="font-headline-md text-headline-md font-bold count-up text-on-surface" data-target="158">0</h3>
+</div>
+<div class="mt-4 h-12 w-full">
+<svg class="w-full h-full" viewbox="0 0 100 40">
+<path class="sparkline-svg" d="M0 10 Q 25 35, 50 10 T 75 30 T 100 20" fill="none" stroke="#576065" stroke-width="2" style="animation-delay: 0.4s"></path>
+</svg>
+</div>
+</div>
+<!-- AI Sales Insights -->
+<div class="glass-card p-6 rounded-2xl relative overflow-hidden flex flex-col justify-between bg-primary-container/10">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 blur-3xl rounded-full"></div>
+<div>
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-primary text-on-primary rounded-lg">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<span class="bg-primary/10 text-primary px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">AI Live</span>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Sales Forecast</p>
+<h3 class="font-headline-md text-headline-md font-bold text-primary">+$12k Expected</h3>
+</div>
+<p class="mt-4 font-label-sm text-label-sm text-on-surface-variant italic leading-snug">"Weekend projection shows surge in high-tier electronics demand."</p>
+</div>
+</section>
+<!-- Main Charts Area -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-2 glass-card p-8 rounded-3xl">
+<div class="flex justify-between items-center mb-8">
+<div>
+<h4 class="font-headline-md text-headline-md font-bold text-on-surface">Sales Performance</h4>
+<p class="font-label-md text-label-md text-on-surface-variant">Real-time algorithmic monitoring</p>
+</div>
+<div class="flex gap-2">
+<button class="px-3 py-1 text-xs font-bold rounded-full bg-primary text-on-primary">Week</button>
+<button class="px-3 py-1 text-xs font-bold rounded-full text-on-surface-variant hover:bg-surface-container transition-all">Month</button>
+</div>
+</div>
+<div class="h-[300px] w-full relative">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 800 300">
+<defs>
+<lineargradient id="gradient" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#38bdf8" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#38bdf8" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<line stroke="#e5eeff" stroke-width="1" x1="0" x2="800" y1="50" y2="50"></line>
+<line stroke="#e5eeff" stroke-width="1" x1="0" x2="800" y1="150" y2="150"></line>
+<line stroke="#e5eeff" stroke-width="1" x1="0" x2="800" y1="250" y2="250"></line>
+<path class="main-chart-area" d="M0 250 L 100 220 L 200 240 L 300 180 L 400 120 L 500 160 L 600 100 L 700 80 L 800 60 V 300 H 0 Z" fill="url(#gradient)"></path>
+<path class="main-chart-path" d="M0 250 L 100 220 L 200 240 L 300 180 L 400 120 L 500 160 L 600 100 L 700 80 L 800 60" fill="none" stroke="#00668a" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+<div class="flex justify-between mt-4 font-label-sm text-label-sm text-on-surface-variant font-medium">
+<span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+</div>
+</div>
+</div>
+<!-- Recent Activity Table -->
+<div class="glass-card p-8 rounded-3xl overflow-hidden flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<h4 class="font-headline-md text-headline-md font-bold text-on-surface">Recent Activity</h4>
+<button class="text-primary font-label-md text-label-md font-bold hover:underline">View All</button>
+</div>
+<div class="space-y-6 flex-1">
+<div class="activity-item flex items-center justify-between group" style="animation-delay: 0.1s">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant/30">
+<img alt="Customer Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCz1OxWNm5cE132Ce7JaML9Ts7GcngCHLaGETesbBgwom_0Ryl0gxBF5K69I1D4042WVG-s2MJYfxtFOW_GHL01YcIkNRlgKqSE_WEYQJfAp3QXs6QwwNm5WEcrQq1Cm7pCte6CG5nyw7pyfrnyuGun7YXzGNkVblhzYFkUCF7OawKjbATay_W90nfW1YtY2cRAFyqXh-BLb2x2avI_VQGL4Fxz_5K175uI60wuQOJ-6Hdkvc3-mbSHCFIzC_-TFgKxIC6L6h-Pgk0W"/>
+</div>
+<div>
+<p class="font-label-md text-label-md font-bold text-on-surface">Liam Vance</p>
+<p class="text-[11px] text-on-surface-variant">2 mins ago • Aura Pro Max</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-label-md text-label-md font-bold text-primary">+$1,299</p>
+<p class="text-[10px] text-tertiary-container text-on-tertiary-container font-bold uppercase">Paid</p>
+</div>
+</div>
+<div class="activity-item flex items-center justify-between group" style="animation-delay: 0.2s">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant/30">
+<img alt="Customer Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgii8RaUiW12tPvjLRjkaDA-8McnRtXt48CAoC8CbEFhk5uM_6_AnN87bti_0gJenuNJPgB_wnEBveMGY7U35aAMCrDmE-nwnES9MdMTQ-lGcqB4GOPaiGw8Zpc8MbvgvmQ6yxCzkw0ANtLV_qD8ABwWo3amUmC0gDCULK4I36tVCEc7niWrbT6TwQwxv_xo-vGAZ2msz9xqXflgtYcjgNwR7TVsPtz0r5z4i01hSM0fwHcJFyv8Fiou6fUG9xqrsxZczN0kFCnMHc"/>
+</div>
+<div>
+<p class="font-label-md text-label-md font-bold text-on-surface">Elena S.</p>
+<p class="text-[11px] text-on-surface-variant">15 mins ago • Smart Hub</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-label-md text-label-md font-bold text-on-surface">+$450</p>
+<p class="text-[10px] text-outline font-bold uppercase">Pending</p>
+</div>
+</div>
+<div class="activity-item flex items-center justify-between group" style="animation-delay: 0.3s">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant/30">
+<img alt="Customer Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDT9IwD_0Or6plUV99sbO9082NzgeyrwxphiMnrFj_CisBT5SSleHqEcbV3Cp82UuPLu9-PPRIumo2bLgbavoKEwUmY_EtbAGlKgNDivCYnxGCstIw8VZ3eVgWY5o2L7CbQAzieWaMxtSLYcqCwPfU2Nm5qlSNbxyq98UqhYpGBAn0NQh-lcxikele7cJzhaAmOvzNRkn_nMBsmqeV_D8Ej3p5dIgQ97gHzJYyZPr5ayDE4exnZAereIzfWn2Fjnw_1IRjeJBNwoJCl"/>
+</div>
+<div>
+<p class="font-label-md text-label-md font-bold text-on-surface">Marcus Thorne</p>
+<p class="text-[11px] text-on-surface-variant">1 hr ago • Aura Buds</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-label-md text-label-md font-bold text-primary">+$199</p>
+<p class="text-[10px] text-tertiary-container text-on-tertiary-container font-bold uppercase">Paid</p>
+</div>
+</div>
+<div class="activity-item flex items-center justify-between group" style="animation-delay: 0.4s">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant/30">
+<img alt="Customer Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtT5LEIpKHcbF-SVtMRQHxzSka-UOktumR2ouAQs_-SaqUyU9zSBVGNmmuxM8G0meCFt3iS5JGHUi5ybL4TZP9HzoZY0hRknkfKXNqAMJU3q94_P2psusnzC66K266voHweesb8iio56t_hW6puEIb8jfu5maEUa-9nK8OqZl86g0OI3N7FTFAS63wgcZifK6VfmozZx3Y12avHDiO4uVb8TyykR5phhvoyHys_vkVA3FVWA3o4rMhX2Ly4XPmOCwG4J5x7BTQhyEH"/>
+</div>
+<div>
+<p class="font-label-md text-label-md font-bold text-on-surface">Sarah Oh</p>
+<p class="text-[11px] text-on-surface-variant">3 hrs ago • Aura Home Kit</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-label-md text-label-md font-bold text-primary">+$890</p>
+<p class="text-[10px] text-tertiary-container text-on-tertiary-container font-bold uppercase">Paid</p>
+</div>
+</div>
+</div>
+<div class="mt-8 p-4 bg-primary-container/10 rounded-2xl border border-primary/20">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary">lightbulb</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant leading-relaxed">
+<strong class="text-primary">System Notice:</strong> 4 new bulk orders detected. Adjusting logistics.
+                        </p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<script>
+        function animateValue(el, start, end, duration, prefix = '') {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const current = Math.floor(progress * (end - start) + start);
+                el.innerHTML = prefix + current.toLocaleString();
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        window.addEventListener('load', () => {
+            const countUps = document.querySelectorAll('.count-up');
+            countUps.forEach(el => {
+                const target = parseInt(el.getAttribute('data-target'));
+                const prefix = el.getAttribute('data-prefix') || '';
+                animateValue(el, 0, target, 1500, prefix);
+            });
+        });
+    </script>
+</body></html>

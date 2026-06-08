@@ -1,16 +1,17 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        bg: '#07080f',
-        surface: '#0e1018',
-        surface2: '#13151f',
-        surface3: '#1a1d2a',
+        bg: '#0b1c30',
+        surface: '#131b2e',
+        surface2: '#1a2333',
+        surface3: '#243047',
         border: 'rgba(255,255,255,0.06)',
-        accent: '#7c3aed',
-        accentLight: '#a78bfa',
+        accent: '#00668a',
+        accentLight: '#38bdf8',
         success: '#34d399',
         warning: '#fbbf24',
         danger: '#f87171',
@@ -22,11 +23,11 @@ export default {
       },
       boxShadow: {
         'card': '0 4px 24px rgba(0,0,0,0.3)',
-        'card-hover': '0 8px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(124,58,237,0.1)',
-        'glow-purple': '0 0 20px rgba(124,58,237,0.4)',
+        'card-hover': '0 8px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(56,189,248,0.1)',
+        'glow-purple': '0 0 20px rgba(56,189,248,0.4)',
       },
       backgroundImage: {
-        'accent-gradient': 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)',
+        'accent-gradient': 'linear-gradient(135deg, #00668a 0%, #38bdf8 100%)',
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-out',
@@ -44,8 +45,8 @@ export default {
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         pulseGlow: {
-          '0%, 100%': { opacity: '1', boxShadow: '0 0 10px rgba(124,58,237,0.6)' },
-          '50%': { opacity: '0.8', boxShadow: '0 0 20px rgba(124,58,237,0.8)' },
+          '0%, 100%': { opacity: '1', boxShadow: '0 0 10px rgba(56,189,248,0.6)' },
+          '50%': { opacity: '0.8', boxShadow: '0 0 20px rgba(56,189,248,0.8)' },
         },
         shimmer: {
           '0%': { backgroundPosition: '200% 0' },

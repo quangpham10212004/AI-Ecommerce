@@ -11,9 +11,9 @@ const PRESETS = {
 } as const
 
 const ROLE_CONFIG = {
-  customer: { icon: <Users size={14} />, label: 'Customer', color: 'from-violet-500 to-purple-600' },
-  staff: { icon: <Zap size={14} />, label: 'Staff', color: 'from-indigo-500 to-blue-600' },
-  admin: { icon: <ShieldCheck size={14} />, label: 'Admin', color: 'from-fuchsia-500 to-pink-600' },
+  customer: { icon: <Users size={14} />, label: 'Customer', color: 'from-accent to-accentLight' },
+  staff: { icon: <Zap size={14} />, label: 'Staff', color: 'from-accent to-cyan-500' },
+  admin: { icon: <ShieldCheck size={14} />, label: 'Admin', color: 'from-accentLight to-cyan-500' },
 } as const
 
 const FEATURES = [
@@ -51,9 +51,9 @@ export default function LoginPage() {
       {/* Left panel — brand */}
       <div className="hidden lg:flex flex-col justify-between w-[55%] relative overflow-hidden p-12">
         {/* Background orbs */}
-        <div className="glow-orb w-96 h-96 bg-violet-600 -top-20 -left-20" />
-        <div className="glow-orb w-72 h-72 bg-indigo-600 bottom-20 right-10" />
-        <div className="glow-orb w-48 h-48 bg-purple-400 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+        <div className="glow-orb w-96 h-96 bg-accent/25 -top-20 -left-20" />
+        <div className="glow-orb w-72 h-72 bg-accentLight/20 bottom-20 right-10" />
+        <div className="glow-orb w-48 h-48 bg-accentLight/10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
 
         {/* Grid overlay */}
         <div

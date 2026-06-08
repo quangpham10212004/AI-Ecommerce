@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aura | Experience the Future of Shopping</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "tertiary-fixed": "#dbe4ea",
+                "on-primary-container": "#004965",
+                "secondary-fixed-dim": "#bec6e0",
+                "surface-dim": "#cbdbf5",
+                "surface-container-low": "#eff4ff",
+                "on-secondary-fixed": "#131b2e",
+                "on-tertiary-container": "#3c454a",
+                "surface-container-highest": "#d3e4fe",
+                "error": "#ba1a1a",
+                "on-surface-variant": "#3e484f",
+                "on-primary-fixed": "#001e2c",
+                "tertiary-fixed-dim": "#bfc8ce",
+                "on-background": "#0b1c30",
+                "secondary-fixed": "#dae2fd",
+                "surface-bright": "#f8f9ff",
+                "surface-container-high": "#dce9ff",
+                "on-tertiary-fixed": "#141d21",
+                "secondary": "#565e74",
+                "background": "#f8f9ff",
+                "on-secondary-fixed-variant": "#3f465c",
+                "primary-fixed-dim": "#7bd0ff",
+                "primary-fixed": "#c4e7ff",
+                "on-error-container": "#93000a",
+                "on-tertiary-fixed-variant": "#3f484d",
+                "primary-container": "#38bdf8",
+                "inverse-on-surface": "#eaf1ff",
+                "outline-variant": "#bdc8d1",
+                "tertiary-container": "#aab3b8",
+                "on-tertiary": "#ffffff",
+                "primary": "#00668a",
+                "inverse-primary": "#7bd0ff",
+                "outline": "#6e7980",
+                "secondary-container": "#dae2fd",
+                "on-primary": "#ffffff",
+                "surface-container-lowest": "#ffffff",
+                "surface-tint": "#00668a",
+                "error-container": "#ffdad6",
+                "on-primary-fixed-variant": "#004c69",
+                "surface": "#f8f9ff",
+                "on-secondary": "#ffffff",
+                "inverse-surface": "#213145",
+                "on-secondary-container": "#5c647a",
+                "surface-variant": "#d3e4fe",
+                "surface-container": "#e5eeff",
+                "on-error": "#ffffff",
+                "tertiary": "#576065",
+                "on-surface": "#0b1c30"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "gutter": "24px",
+                "xs": "4px",
+                "margin-desktop": "48px",
+                "md": "16px",
+                "sm": "8px",
+                "base": "4px",
+                "margin-mobile": "16px",
+                "lg": "24px",
+                "xl": "32px",
+                "stack-sm": "8px",
+                "stack-md": "16px",
+                "stack-lg": "32px",
+                "container-max": "1440px"
+        },
+        "fontFamily": {
+                "headline-lg": ["Outfit"],
+                "display-lg": ["Outfit"],
+                "headline-md": ["Outfit"],
+                "headline-lg-mobile": ["Outfit"],
+                "body-md": ["Outfit"],
+                "label-md": ["Outfit"],
+                "body-lg": ["Outfit"],
+                "label-sm": ["Outfit"]
+        },
+        "fontSize": {
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "display-lg": [
+                        "48px",
+                        {
+                                "lineHeight": "56px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "headline-md": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "28px",
+                        {
+                                "lineHeight": "36px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-md": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "letterSpacing": "0.01em",
+                                "fontWeight": "500"
+                        }
+                ],
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-sm": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "display-md": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+        },
+        "animation": {
+            "slide-up": "slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+            "fade-in-scroll": "fadeInScroll 0.8s ease-out forwards"
+        },
+        "keyframes": {
+            "slideUp": {
+                "0%": { opacity: "0", transform: "translateY(40px)" },
+                "100%": { opacity: "1", transform: "translateY(0)" }
+            },
+            "fadeInScroll": {
+                "0%": { opacity: "0", transform: "translateY(20px)" },
+                "100%": { opacity: "1", transform: "translateY(0)" }
+            }
+        }
+      },
+    },
+  }
+</script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .glass-card:hover {
+            border-color: rgba(56, 189, 248, 0.6);
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.1);
+        }
+        .gradient-text {
+            background: linear-gradient(to right, #00668a, #5c647a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gradient-button {
+            background: linear-gradient(135deg, #00668a 0%, #38bdf8 100%);
+        }
+        .glow-hover:hover {
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.25);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f8f9ff;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #dce9ff;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #bdc8d1;
+        }
+
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease-out;
+        }
+        .scroll-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .stagger-in > * {
+            opacity: 0;
+        }
+
+        /* 3D Tilt container */
+        .tilt-card {
+            perspective: 1000px;
+        }
+        .tilt-card-inner {
+            transform-style: preserve-3d;
+            transition: transform 0.1s;
+        }
+
+        #neural-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.2;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<nav class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-20 bg-surface/70 backdrop-blur-xl border-b border-black/5 shadow-[0_0_30px_rgba(56,189,248,0.05)]">
+<div class="flex items-center gap-8">
+<span class="font-headline-md text-headline-md font-bold text-primary tracking-tighter">Aura</span>
+<div class="hidden md:flex items-center gap-stack-lg">
+<a class="font-body-md text-body-md text-primary border-b-2 border-primary pb-1 transition-all" href="#">Home</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Products</a>
+</div>
+</div>
+<div class="flex items-center gap-stack-md">
+<!-- Search Bar -->
+<div class="hidden lg:flex items-center bg-black/5 border border-black/10 rounded-full px-4 py-2 w-64 focus-within:border-primary transition-all">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full text-on-surface placeholder:text-on-surface-variant" placeholder="Search the future..." type="text"/>
+</div>
+<div class="flex items-center gap-stack-sm">
+<button class="p-2 hover:bg-black/5 rounded-full transition-all duration-300">
+<span class="material-symbols-outlined text-on-surface-variant">light_mode</span>
+</button>
+<button class="p-2 hover:bg-black/5 rounded-full transition-all duration-300 relative">
+<span class="material-symbols-outlined text-on-surface-variant">shopping_bag</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></span>
+</button>
+<div class="h-8 w-[1px] bg-black/10 mx-2"></div>
+<button class="flex items-center gap-2 bg-primary-container text-on-primary-container px-4 py-2 rounded-full font-label-md text-label-md hover:opacity-90 transition-all active:scale-95">
+<span class="material-symbols-outlined text-[18px]">smart_toy</span>
+                    AI Assistant
+                </button>
+<img alt="Customer Avatar" class="w-10 h-10 rounded-full border border-black/10 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuADF7nWZVCtsImlRRwEnk3U7XAABzUJR-EVD_u-iE0ZjPMKImvu40DMEXmUOQMIudnZ1elUKmFNc8vCi2rmrdzmcaqt21wfhs8gR3NjqqoTmMcZVu6iJ7t4yTXVi45xj8BGxmUoc-ohJFtT0gfDPj7brYI0FdqNEUsvs2mfHtb_TFPiRZm-E08ZFZXBDBl0o1Bbi2WpWFDRyYEiMPpnUaydcGz1nGGIPxcMJvYrreZKDRrhnBXtdPfScVYAvJClnnwMcv9QZuFEZ_h1"/>
+</div>
+</div>
+</nav>
+<main class="pt-20">
+<!-- Hero Section -->
+<section class="relative min-h-[870px] flex items-center justify-center overflow-hidden px-margin-mobile md:px-margin-desktop py-stack-lg">
+<canvas id="neural-canvas"></canvas>
+<!-- Background Atmospheric Glows -->
+<div class="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/10 blur-[120px] rounded-full -z-10 animate-pulse"></div>
+<div class="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-secondary/10 blur-[100px] rounded-full -z-10"></div>
+<div class="max-w-container-max w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+<div class="z-10 text-center lg:text-left stagger-in" id="hero-text-container">
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/5 border border-black/10 mb-6 opacity-0">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+<span class="font-label-sm text-label-sm text-primary tracking-widest uppercase">Next-Gen Interface Active</span>
+</div>
+<h1 class="font-display-lg text-[48px] md:text-[64px] leading-tight mb-6 opacity-0">
+<span class="gradient-text">Experience the Future</span><br/>
+<span class="text-on-surface">of Shopping</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-10 max-w-xl mx-auto lg:mx-0 opacity-0">
+                        Aura leverages neural-engine recommendations and ethereal glassmorphic interfaces to redefine how you interact with premium global brands.
+                    </p>
+<div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start opacity-0">
+<button class="gradient-button glow-hover px-10 py-4 rounded-xl font-headline-md text-headline-md text-white transition-all transform active:scale-95 flex items-center justify-center gap-3">
+                            Explore Collection
+                            <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<button class="bg-black/5 border border-black/10 hover:bg-black/10 px-10 py-4 rounded-xl font-headline-md text-headline-md text-on-surface transition-all flex items-center justify-center gap-3">
+<span class="material-symbols-outlined">play_circle</span>
+                            Watch Keynote
+                        </button>
+</div>
+</div>
+<div class="relative hidden lg:block opacity-0" id="hero-image-container">
+<div class="glass-card p-4 rounded-3xl rotate-3 relative z-20">
+<img class="rounded-2xl w-full h-[500px] object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzfJu40qJt9wCOecJmWxWXSBqKjV9uHWxeof-fE6_spulZ6LQFpgwHwy5aDByO0tQ9Auw4gH5WU38ci2JTCh1H6tod6V1Crwf5d0qwdtNe-Uj_iiI0tEol_sZTAPSewYX3oe3M1hCP3Jad1oxVkeTxXU0ocXnl4A5A6ANcIuq4h_d0AVtrLx8PgEKaqT8aHsI6E0j0S-1fb_OqdIweVE3zTk-SGL9vb4kC5KDb5ukQRQskUKvysTvjUf_uP_GFzt386isKcI-Wbkj_"/>
+<div class="absolute -bottom-6 -left-6 glass-card p-6 rounded-2xl shadow-2xl animate-bounce">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">auto_awesome</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">AI Confidence</p>
+<p class="font-headline-md text-headline-md text-primary">99.8%</p>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-primary/20 blur-[80px] -z-10 opacity-30"></div>
+</div>
+</div>
+</section>
+<!-- Recommended Section -->
+<section class="py-20 px-margin-mobile md:px-margin-desktop bg-surface-container-low/50 scroll-reveal">
+<div class="max-w-container-max mx-auto mb-10 flex justify-between items-end">
+<div>
+<h2 class="font-headline-lg text-headline-lg mb-2 flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-weight="fill">neurology</span>
+                        Recommended for You
+                    </h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Curated by our neural shopping assistant based on your style profile.</p>
+</div>
+<div class="flex gap-4">
+<button class="w-12 h-12 rounded-full border border-black/10 flex items-center justify-center hover:bg-black/5 transition-all text-on-surface">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-12 h-12 rounded-full border border-black/10 flex items-center justify-center hover:bg-black/5 transition-all text-on-surface">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Product Card 1 -->
+<div class="tilt-card">
+<div class="tilt-card-inner glass-card rounded-2xl p-4 cursor-pointer group">
+<div class="relative overflow-hidden rounded-xl h-64 mb-4 bg-surface-container-high">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC19j03tOn30dwpC3Uz-f3d-3kepS77waDdIP6NR7z0EjWXU5OqomrIqANlOSWqv4X75CiIjkwT1O8jfwkKH9S-CoodVKeIyfoxIsazMsdHDKxhMHxW-126WetVNzggVJScJDIez7CcflKmpEf2g58NVuhdE4KvMKSMoXZbkjkQPs-bmtlnnVKj0Bnz0SFDFM1yi4KmxJljPOGS5V8HRT325gCAyIpu-HEwu1GBlhenK8prnom0xcn3mhY9zRpTJapHqbT2XrT3CIr1"/>
+<div class="absolute top-3 right-3 bg-white/80 backdrop-blur-md px-3 py-1 rounded-full border border-black/5">
+<span class="font-label-sm text-label-sm text-primary">98% Match</span>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Aura Sound Max</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">Pure audio immersion.</p>
+<div class="flex justify-between items-center">
+<span class="font-headline-md text-headline-md text-primary">$499</span>
+<button class="p-2 rounded-lg bg-primary/10 text-primary hover:bg-primary transition-all hover:text-white">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="tilt-card">
+<div class="tilt-card-inner glass-card rounded-2xl p-4 cursor-pointer group">
+<div class="relative overflow-hidden rounded-xl h-64 mb-4 bg-surface-container-high">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAVN6un1fZkBLqyWQMOWwM59cAbWBcKRfDoScGDI6S1KCcAUpSh6ed6QpVj430Nykgiv4-qK3QVNlXSiKp5yCb0yAGbg_jTIvT37IWiKrlhpU-kfHRThQGjUDX2BIv8mTcXrHPRTFXCUwjquWtiV-dZC9I7a0fithA6gr87j9xMlx8kFiZysExD_hc36J-yNI8xx67pmtve5YtGJ3KIjcjxsMMX1J8LVKFF7Im6u3oMYrDHF2dRJdG7708hBWUC99F6q2eghEKuEct"/>
+<div class="absolute top-3 right-3 bg-white/80 backdrop-blur-md px-3 py-1 rounded-full border border-black/5">
+<span class="font-label-sm text-label-sm text-primary">New Arrival</span>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Chronos Ethereal</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">Time in light.</p>
+<div class="flex justify-between items-center">
+<span class="font-headline-md text-headline-md text-primary">$1,250</span>
+<button class="p-2 rounded-lg bg-primary/10 text-primary hover:bg-primary transition-all hover:text-white">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="tilt-card">
+<div class="tilt-card-inner glass-card rounded-2xl p-4 cursor-pointer group">
+<div class="relative overflow-hidden rounded-xl h-64 mb-4 bg-surface-container-high">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANbEW3dDQQYiD62Rj6U48Rcon25hf5ttLkMbSJWL1HgryerKqKeJLW4hFVW8YAuDWObfMGDXn3-AgLa4YRItt0tePruSNI1PhvA-IoekNAuaXmkOXyDhzBdi_EXAx7ax6uRZzkAb81I5WtShqKgb4C-P-DWaozQcsOXqO2ycnq34IVFTQpWM8W67MNpZfIPizcokN1knGojt2-NF2KUoSM634P1GwTEggmEECJV--2iOu3OkZKnGQ-v_wD4Jer3mnwQZhjn_2AMTtb"/>
+<div class="absolute top-3 right-3 bg-white/80 backdrop-blur-md px-3 py-1 rounded-full border border-black/5">
+<span class="font-label-sm text-label-sm text-primary">Best Seller</span>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Aura Phone 1</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">Seamless intelligence.</p>
+<div class="flex justify-between items-center">
+<span class="font-headline-md text-headline-md text-primary">$999</span>
+<button class="p-2 rounded-lg bg-primary/10 text-primary hover:bg-primary transition-all hover:text-white">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 4 -->
+<div class="tilt-card">
+<div class="tilt-card-inner glass-card rounded-2xl p-4 cursor-pointer group">
+<div class="relative overflow-hidden rounded-xl h-64 mb-4 bg-surface-container-high">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUnKQlTBefD9DwsOscHnsubOEXxQkII5PBEKW5s26o4YfhkqqGE022hKpGIIaIaFfIp7digYM1ij7ZECXVdkqksh88J-wveeMcFlJMbYdumIXsNVt2mEROJ-wbURYCr0XpRwtCJ6doRyIHpTGyEEOet6E2LblaoQaZaay1j-9R4pFyGIDfGhorLIBox1gFcx5kTqHM30Hnq0LyQVSu9CFuMzl08P2O9kGgwjTBufY93MLhSG3NJmhIYHZkrQ0zQ64_77JiA9lQr_VS"/>
+<div class="absolute top-3 right-3 bg-white/80 backdrop-blur-md px-3 py-1 rounded-full border border-black/5">
+<span class="font-label-sm text-label-sm text-primary">92% Match</span>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Canvas Pro Pad</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">Create with light.</p>
+<div class="flex justify-between items-center">
+<span class="font-headline-md text-headline-md text-primary">$749</span>
+<button class="p-2 rounded-lg bg-primary/10 text-primary hover:bg-primary transition-all hover:text-white">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Bento Featured Collection -->
+<section class="py-32 px-margin-mobile md:px-margin-desktop scroll-reveal">
+<div class="max-w-container-max mx-auto">
+<div class="text-center mb-16">
+<h2 class="font-display-md text-display-md text-on-surface mb-4">The Obsidian Collection</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">A limited-run series of artifacts designed for the digital native. Defined by darkness, refined by precision.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-6 grid-rows-4 md:grid-rows-2 gap-gutter h-[1000px] md:h-[600px]">
+<!-- Large Feature -->
+<div class="md:col-span-3 md:row-span-2 glass-card rounded-3xl overflow-hidden relative group">
+<img class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4Gjm3GRvVbdbG_p6ieYjmqPjJv9X-Mm5apKTJ15gjCsNYypbyoIxaXDdJe0qx-ivz9x0OwwD4ypVITteOPXTVBjDY7Uq7HDPlNqNxohmo9zmVL45-dXfRtjpIVY6kW8tnxvTi2KgSlTK1g5V_8RWK46xz9WaaCFAjiGskEJBd7h1MiVco74nFMYlDFm0QIX_IPsu1UFY21VJcFukM6IWxr1vNIAhsIctid098LiRlD24uiH6ka-aRjXY2KgcH41-gLcCM_ycLYMvi"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent"></div>
+<div class="absolute bottom-10 left-10 p-4">
+<span class="font-label-sm text-label-sm text-primary mb-4 block tracking-widest">LIMITED EDITION</span>
+<h3 class="font-headline-lg text-headline-lg text-on-surface mb-4">The Core Series</h3>
+<button class="bg-primary text-white px-6 py-2 rounded-full font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-all">Shop Now</button>
+</div>
+</div>
+<!-- Medium Feature Top -->
+<div class="md:col-span-3 md:row-span-1 glass-card rounded-3xl overflow-hidden relative group">
+<div class="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-all z-10"></div>
+<img class="w-full h-full object-cover opacity-70" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLEVtauEx1j8T9fa8R5rmsWMYbxzXpfZQLEPo9XOhi9Ah41US7esnQZ2suUZ4BZRbv1JMH1t9o9xkr4_x5x6F0OfdKbjb6aS_uKPRd67QXR7K5xKHNZxj8vEEWHWU-f8hXYDOcWUMfUKqsBG2KEvh9mzOorUG87YKtb0LMWz3xYU5eh0wyi6Mlb1kzeWH5Z-Aql9hzHbUq85ei8IPQ2Ji5_oF0BnCwoRmfCPqVbgdOB29pJpgDklunqAzp2wj9JN1kh65SH5-5DfNU"/>
+<div class="absolute inset-0 flex items-center justify-between px-10 z-20">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Aura Home</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Intelligent spaces.</p>
+</div>
+<span class="material-symbols-outlined text-primary text-4xl">home_max</span>
+</div>
+</div>
+<!-- Small Feature 1 -->
+<div class="md:col-span-1.5 md:row-span-1 glass-card rounded-3xl p-8 flex flex-col justify-end group cursor-pointer">
+<span class="material-symbols-outlined text-primary text-4xl mb-4 group-hover:scale-110 transition-transform">bolt</span>
+<h4 class="font-headline-md text-headline-md text-on-surface">Flash Sales</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Live in 12:00:45</p>
+</div>
+<!-- Small Feature 2 -->
+<div class="md:col-span-1.5 md:row-span-1 glass-card rounded-3xl p-8 flex flex-col justify-end group cursor-pointer border-primary/30 bg-primary/5">
+<span class="material-symbols-outlined text-primary text-4xl mb-4 group-hover:scale-110 transition-transform">auto_awesome</span>
+<h4 class="font-headline-md text-headline-md text-primary">AI Concierge</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Talk to us</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Newsletter / CTA -->
+<section class="py-32 relative overflow-hidden scroll-reveal">
+<div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop text-center relative z-10">
+<h2 class="font-display-md text-display-md text-on-surface mb-6">Join the Ethereal Wave</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl mx-auto mb-10">Subscribe for early access to drops, neural shopping insights, and exclusive member experiences.</p>
+<div class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+<input class="bg-black/5 border border-black/10 rounded-xl px-6 py-4 flex-grow focus:border-primary focus:ring-1 focus:ring-primary transition-all text-on-surface placeholder:text-on-surface-variant" placeholder="Email address" type="email"/>
+<button class="gradient-button px-8 py-4 rounded-xl font-headline-md text-headline-md text-white shadow-lg active:scale-95 transition-all">Join</button>
+</div>
+</div>
+<!-- Decorative circle -->
+<div class="absolute -bottom-48 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary/10 blur-[150px] rounded-full -z-10"></div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="py-20 border-t border-black/5 bg-surface-container-lowest">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop grid grid-cols-1 md:grid-cols-4 gap-12">
+<div>
+<span class="font-headline-md text-headline-md font-bold text-primary mb-6 block">Aura</span>
+<p class="font-body-md text-body-md text-on-surface-variant">Synthesizing high-performance technology with ethereal shopping experiences.</p>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface font-bold mb-6 uppercase tracking-widest">Platform</h4>
+<ul class="space-y-4">
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Neural Recs</a></li>
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Obsidian Drop</a></li>
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Virtual Try-on</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface font-bold mb-6 uppercase tracking-widest">Support</h4>
+<ul class="space-y-4">
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Shipping</a></li>
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Sustainability</a></li>
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Help Center</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface font-bold mb-6 uppercase tracking-widest">Connect</h4>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full border border-black/10 flex items-center justify-center hover:bg-primary/20 hover:border-primary transition-all text-on-surface" href="#">
+<span class="material-symbols-outlined text-lg">public</span>
+</a>
+<a class="w-10 h-10 rounded-full border border-black/10 flex items-center justify-center hover:bg-primary/20 hover:border-primary transition-all text-on-surface" href="#">
+<span class="material-symbols-outlined text-lg">chat</span>
+</a>
+<a class="w-10 h-10 rounded-full border border-black/10 flex items-center justify-center hover:bg-primary/20 hover:border-primary transition-all text-on-surface" href="#">
+<span class="material-symbols-outlined text-lg">share</span>
+</a>
+</div>
+</div>
+</div>
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop mt-20 pt-8 border-t border-black/5 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 Aura Technologies. All rights reserved.</p>
+<div class="flex gap-8">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary" href="#">Terms of Service</a>
+</div>
+</div>
+</footer>
+<!-- Scripts -->
+<script>
+        // 1. Neural Network Background Effect
+        const canvas = document.getElementById('neural-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const particleCount = 60;
+
+        function initCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles = [];
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    radius: Math.random() * 2 + 1
+                });
+            }
+        }
+
+        function drawNeural() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#00668a';
+            ctx.strokeStyle = 'rgba(0, 102, 138, 0.1)';
+            
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+
+                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                for (let j = i + 1; j < particles.length; j++) {
+                    let p2 = particles[j];
+                    let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                    if (dist < 150) {
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.lineWidth = 1 - dist / 150;
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(drawNeural);
+        }
+
+        // 2. Text Entrance Animation
+        function animateEntrance() {
+            const elements = document.querySelectorAll('#hero-text-container > *');
+            elements.forEach((el, index) => {
+                setTimeout(() => {
+                    el.classList.add('animate-slide-up');
+                    el.style.opacity = '1';
+                }, index * 150);
+            });
+            
+            setTimeout(() => {
+                const img = document.getElementById('hero-image-container');
+                if(img) {
+                    img.classList.add('animate-slide-up');
+                    img.style.opacity = '1';
+                }
+            }, 600);
+        }
+
+        // 3. Scroll Reveal Logic
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        // 4. 3D Tilt Effect for Product Cards
+        function initTiltEffect() {
+            const cards = document.querySelectorAll('.tilt-card');
+            cards.forEach(card => {
+                const inner = card.querySelector('.tilt-card-inner');
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = (y - centerY) / 15;
+                    const rotateY = (centerX - x) / 15;
+                    inner.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    inner.style.transform = `rotateX(0deg) rotateY(0deg) scale(1)`;
+                });
+            });
+        }
+
+        // Initialize everything
+        window.addEventListener('load', () => {
+            initCanvas();
+            drawNeural();
+            animateEntrance();
+            initTiltEffect();
+            document.querySelectorAll('.scroll-reveal').forEach(el => revealObserver.observe(el));
+        });
+
+        window.addEventListener('resize', initCanvas);
+
+        // Hover movement for atmospheric glows
+        document.addEventListener('mousemove', (e) => {
+            const glows = document.querySelectorAll('.animate-pulse');
+            glows.forEach(glow => {
+                const speed = 0.05;
+                const x = (window.innerWidth - e.pageX * speed) / 100;
+                const y = (window.innerHeight - e.pageY * speed) / 100;
+                glow.style.transform = `translateX(${x}px) translateY(${y}px)`;
+            });
+        });
+    </script>
+</body></html>
